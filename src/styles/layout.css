@@ -231,3 +231,39 @@
   margin: 0;
   font-size: 13px;
 }
+
+
+/* v0.1.19 - restore v0.1.16 smooth flowing tab motion */
+.top-switch-item {
+  transition:
+    flex 1.25s cubic-bezier(0.19, 1, 0.22, 1),
+    flex-basis 1.25s cubic-bezier(0.19, 1, 0.22, 1),
+    width 1.25s cubic-bezier(0.19, 1, 0.22, 1),
+    background-color 0.85s ease,
+    color 0.85s ease,
+    box-shadow 0.85s ease,
+    border-color 0.85s ease !important;
+}
+
+.top-switch-item.active {
+  flex: 1 1 auto;
+}
+
+.top-switch-item.compact {
+  flex: 0 0 42px;
+}
+
+.switch-label {
+  transition:
+    max-width 1.15s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.85s ease,
+    transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
+
+.top-switch-item.active .switch-icon,
+.top-switch-item.compact .switch-icon {
+  transition:
+    opacity 0.85s ease,
+    width 1.05s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
