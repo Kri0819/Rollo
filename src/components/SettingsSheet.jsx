@@ -10,6 +10,7 @@ export default function SettingsSheet({
   setTags,
   onAddTag,
   onLogout,
+  onExportData,
   onClose,
 }) {
   const [screen, setScreen] = useState("main");
@@ -116,6 +117,11 @@ export default function SettingsSheet({
               <span className="settings-chevron">›</span>
             </button>
 
+            <button className="settings-list-row" onClick={onExportData}>
+              <span>匯出本機備份</span>
+              <span className="settings-chevron">›</span>
+            </button>
+
             <button className="settings-logout-row" onClick={onLogout}>
               登出
             </button>
@@ -198,7 +204,7 @@ export default function SettingsSheet({
             <div className="about-ball" />
             <h3>滾滾 Rollo</h3>
             <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.9</p>
+            <p className="about-version">v0.1.10</p>
           </div>
         </div>
       )}

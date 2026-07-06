@@ -207,3 +207,37 @@
 .tabs {
   display: none;
 }
+
+
+/* v0.1.10 full-width top switch */
+.top-switch-wrap {
+  padding: 8px 14px 8px;
+}
+
+.top-switch {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-switch-item {
+  height: 40px;
+}
+
+.top-switch-item.active {
+  flex: 1 1 auto;
+  width: auto;
+}
+
+.top-switch-item.compact {
+  flex: 0 0 42px;
+  width: 42px;
+}
+
+.fab {
+  bottom: 18px;
+  width: 68px;
+  height: 68px;
+  font-size: 40px;
+}

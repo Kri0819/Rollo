@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./styles.css";
 
-import { DEFAULT_TAGS, MAX_TAGS, STORAGE_KEYS } from "./constants/defaults";
+import { DEFAULT_TAGS, LEGACY_STORAGE_KEYS, STORAGE_KEYS } from "./constants/defaults";
 import { todayKey, dateKey } from "./utils/date";
-import { load, save } from "./utils/storage";
+import { downloadJSON, exportRolloData, loadWithLegacy, save } from "./utils/storage";
 
 import Header from "./components/Header";
 import TopSwitch from "./components/TopSwitch";
@@ -41,16 +41,16 @@ function normalizeTasks(tasks) {
 
 export default function App() {
   const [tasks, setTasks] = useState(() =>
-    normalizeTasks(load(STORAGE_KEYS.tasks, []))
+    normalizeTasks(loadWithLegacy(STORAGE_KEYS.tasks, LEGACY_STORAGE_KEYS.tasks, []))
   );
 
   const [tags, setTags] = useState(() => {
-    const saved = load(STORAGE_KEYS.tags, DEFAULT_TAGS);
+    const saved = loadWithLegacy(STORAGE_KEYS.tags, LEGACY_STORAGE_KEYS.tags, DEFAULT_TAGS);
     return saved.map((tag) => ({ id: tag.id, name: tag.name }));
   });
 
   const [theme, setTheme] = useState(() => {
-    return load(STORAGE_KEYS.settings, { theme: "light" }).theme || "light";
+    return loadWithLegacy(STORAGE_KEYS.settings, LEGACY_STORAGE_KEYS.settings, { theme: "light" }).theme || "light";
   });
 
   const [tab, setTab] = useState("todo");
@@ -233,6 +233,20 @@ export default function App() {
     return true;
   }
 
+
+  function exportLocalData() {
+    const data = exportRolloData({
+      tasks,
+      tags,
+      settings: { theme },
+    });
+
+    downloadJSON(`rollo-backup-${todayKey()}.json`, data);
+
+    setToast("已匯出本機備份");
+    setTimeout(() => setToast(""), 1800);
+  }
+
   function logoutPlaceholder() {
     setToast("目前是本機版本，尚未啟用登入");
     setTimeout(() => setToast(""), 1800);
@@ -315,6 +329,7 @@ export default function App() {
           setTags={setTags}
           onAddTag={addTag}
           onLogout={logoutPlaceholder}
+          onExportData={exportLocalData}
           onClose={() => setSettingsOpen(false)}
         />
       )}
