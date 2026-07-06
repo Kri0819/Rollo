@@ -18,10 +18,10 @@ const TAGS_KEY = "rollo:tags:v011";
 const SETTINGS_KEY = "rollo:settings:v011";
 
 const DEFAULT_TAGS = [
-  { id: "work", name: "工作", color: "blue" },
-  { id: "life", name: "生活", color: "green" },
-  { id: "important", name: "重要", color: "red" },
-  { id: "waiting", name: "等待中", color: "yellow" },
+  { id: "work", name: "工作" },
+  { id: "life", name: "生活" },
+  { id: "important", name: "重要" },
+  { id: "waiting", name: "等待中" },
 ];
 
 function uid() {
@@ -430,7 +430,7 @@ function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
         <div className="task-main">
           <div className="task-line">
             <h2 className={`task-title urgency-${urgency.level}`}>{task.title}</h2>
-            {tag ? <span className={`tag tag-${tag.color}`}>{tag.name}</span> : null}
+            {tag ? <span className="tag">{tag.name}</span> : null}
           </div>
 
           <p className="task-note">{task.note || " "}</p>
@@ -469,7 +469,7 @@ function DoneCard({ task, tag, onOpen, onRestore, onDelete }) {
         <div className="task-main">
           <div className="task-line">
             <h2 className="task-title done-title">{task.title}</h2>
-            {tag ? <span className={`tag tag-${tag.color}`}>{tag.name}</span> : null}
+            {tag ? <span className="tag">{tag.name}</span> : null}
           </div>
         </div>
 
@@ -704,7 +704,7 @@ function SettingsModal({ theme, setTheme, tags, setTags, onAddTag, onLogout, onC
   }
 
   return (
-    <CenterModal onClose={onClose}>
+    <BottomSheet onClose={onClose}>
       <div className="modal-head">
         <h2>設定</h2>
         <button className="icon-btn" onClick={onClose}>
@@ -747,22 +747,6 @@ function SettingsModal({ theme, setTheme, tags, setTags, onAddTag, onLogout, onC
                 }
               />
 
-              <select
-                value={tag.color}
-                onChange={(e) =>
-                  setTags((prev) =>
-                    prev.map((t) =>
-                      t.id === tag.id ? { ...t, color: e.target.value } : t
-                    )
-                  )
-                }
-              >
-                <option value="blue">藍</option>
-                <option value="green">綠</option>
-                <option value="yellow">黃</option>
-                <option value="red">紅</option>
-              </select>
-
               <button onClick={() => removeTag(tag.id)}>
                 <Trash2 size={15} />
               </button>
@@ -791,7 +775,7 @@ function SettingsModal({ theme, setTheme, tags, setTags, onAddTag, onLogout, onC
         <LogOut size={17} />
         登出
       </button>
-    </CenterModal>
+    </BottomSheet>
   );
 }
 
@@ -820,6 +804,17 @@ function CenterModal({ children, onClose, small = false }) {
         className={`center-modal ${small ? "small" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function BottomSheet({ children, onClose }) {
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div className="bottom-sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-handle" />
         {children}
       </div>
     </div>
