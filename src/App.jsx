@@ -84,9 +84,9 @@ function statusOrder(status) {
 
 async function loadJSON(key, fallback) {
   try {
-    const res = await window.storage.get(key, false);
-    if (!res) return fallback;
-    return JSON.parse(res.value);
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
   } catch (e) {
     return fallback;
   }
@@ -94,9 +94,9 @@ async function loadJSON(key, fallback) {
 
 async function saveJSON(key, value) {
   try {
-    await window.storage.set(key, JSON.stringify(value), false);
+    localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
-    // best-effort; ignore storage failure
+    console.warn("localStorage save failed", e);
   }
 }
 
