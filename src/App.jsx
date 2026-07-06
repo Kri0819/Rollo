@@ -810,6 +810,17 @@ function CenterModal({ children, onClose, small = false }) {
   );
 }
 
+function BottomSheet({ children, onClose }) {
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div className="bottom-sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-handle" />
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function EmptyState({ title, subtitle }) {
   return (
     <div className="empty">
