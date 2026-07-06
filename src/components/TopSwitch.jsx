@@ -9,7 +9,10 @@ export default function TopSwitch({ activeTab, onChangeTab }) {
           onClick={() => onChangeTab("todo")}
           aria-label="待辦"
         >
-          {activeTab === "todo" ? <span>待辦</span> : <Circle size={18} />}
+          <span className="switch-content">
+            <Circle className="switch-icon" size={17} strokeWidth={2.4} />
+            <span className="switch-label">待辦</span>
+          </span>
         </button>
 
         <button
@@ -17,7 +20,10 @@ export default function TopSwitch({ activeTab, onChangeTab }) {
           onClick={() => onChangeTab("done")}
           aria-label="已完成"
         >
-          {activeTab === "done" ? <span>已完成</span> : <CheckCircle2 size={18} />}
+          <span className="switch-content">
+            <CheckCircle2 className="switch-icon" size={17} strokeWidth={2.4} />
+            <span className="switch-label">已完成</span>
+          </span>
         </button>
       </div>
     </div>
