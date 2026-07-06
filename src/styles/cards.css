@@ -1,17 +1,140 @@
-/* v0.1.16 - vertically center right status from v0.1.11 card layout */
+.swipe-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.swipe-actions {
+  position: absolute;
+  inset: 0 10px 0 auto;
+  width: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  z-index: 0;
+}
+
+.swipe-wrap[data-action-count="1"] .swipe-actions {
+  width: 54px;
+}
+
+.swipe-btn {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--blue);
+  box-shadow: 0 4px 12px var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipe-btn.delete {
+  color: var(--red);
+}
+
+.swipe-content {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.22s ease;
+  will-change: transform;
+  cursor: grab;
+}
+
+.swipe-content:active {
+  cursor: grabbing;
+}
+
+.swipe-wrap.open .swipe-content {
+  transform: translateX(-112px);
+}
+
+.swipe-wrap[data-action-count="1"].open .swipe-content {
+  transform: translateX(-58px);
+}
+
+.task-card {
+  min-height: 78px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: 0 3px 12px var(--shadow);
+}
+
+.todo-card {
+  position: relative;
+  display: block;
+  padding: 14px 118px 13px 14px;
+  overflow: hidden;
+}
+
+.todo-card .task-main {
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.task-main {
+  min-width: 0;
+}
+
+.task-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.done-title,
+.checked-title {
+  color: var(--muted);
+  text-decoration-line: line-through;
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 2px;
+}
+
+.checked-title {
+  color: var(--green);
+  text-decoration-color: var(--green);
+}
+
+.task-note {
+  margin: 7px 0 0;
+  min-height: 18px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
 .todo-card .task-side,
 .todo-card .task-side.checked-side {
+  position: absolute;
+  top: 0;
+  right: 14px;
+  bottom: 0;
+  width: 94px;
+  min-height: 0;
+  height: auto;
+  padding: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 24px;
+  column-gap: 8px;
   align-items: center;
   justify-items: end;
-  column-gap: 8px;
-  width: 100%;
-  height: 100%;
-  align-self: stretch;
-  padding-top: 0;
-  padding-bottom: 0;
-  transform: translateY(2px);
 }
 
 .todo-card .task-side.checked-side::before {
@@ -21,20 +144,20 @@
 
 .todo-card .urgency-text {
   grid-column: 1;
-  align-self: center;
-  justify-self: end;
+  min-width: 0;
+  width: 100%;
   min-height: 0;
-  line-height: 1;
+  display: block;
   text-align: right;
+  line-height: 1;
   white-space: nowrap;
-  transform: translateY(0);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .todo-card .check-circle {
   grid-column: 2;
-  align-self: center;
   justify-self: end;
-  transform: translateY(0);
 }
 
 .check-circle,
@@ -42,6 +165,54 @@
   width: 23px;
   height: 23px;
   flex: 0 0 23px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-circle.checked,
+.done-check {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.done-card {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px 12px;
+  overflow: hidden;
+}
+
+.done-card .task-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.done-check {
+  justify-self: end;
+}
+
+.urgency-red {
+  color: var(--red);
+}
+
+.urgency-orange {
+  color: var(--orange);
+}
+
+.urgency-yellow {
+  color: var(--yellow);
+}
+
+.urgency-green {
+  color: var(--green);
 }
 
 .tag {
@@ -51,8 +222,29 @@
   align-items: center;
   justify-content: center;
   padding: 0 11px;
+  border-radius: 999px;
   font-size: 12px;
+  font-weight: 800;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
+  background: var(--card-soft);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 390px) {
+  .todo-card {
+    padding-right: 108px;
+  }
+
+  .todo-card .task-side,
+  .todo-card .task-side.checked-side {
+    right: 13px;
+    width: 84px;
+  }
+
+  .todo-card .urgency-text {
+    font-size: 11.5px;
+  }
 }
