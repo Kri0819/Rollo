@@ -172,3 +172,11 @@
   color: var(--muted);
   border: 1px solid var(--line);
 }
+
+
+/* v0.1.7 checked card readability */
+.checked-title {
+  color: var(--green);
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: var(--green);
+}

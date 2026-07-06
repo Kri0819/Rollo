@@ -330,3 +330,73 @@
 .settings-section-title {
   letter-spacing: 0;
 }
+
+
+/* v0.1.7 settings typography weight fix */
+.settings-head h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.settings-section-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.settings-account-name {
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.settings-account-sub {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.settings-appearance-card {
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.mini-theme-toggle button {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.settings-list-row,
+.settings-logout-row {
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.settings-row-right {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.settings-back {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tag-name-display,
+.tag-edit-input {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.settings-add-tag-row button {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.about-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.about-card p {
+  font-size: 13.5px;
+}
