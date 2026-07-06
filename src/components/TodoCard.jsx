@@ -2,23 +2,21 @@ import { Check, Pencil, Trash2 } from "lucide-react";
 import { getUrgency, isCheckedToday } from "../utils/date";
 import SwipeCard from "./SwipeCard";
 
-export default function TodoCard({
-  task,
-  tag,
-  onCheck,
-  onEdit,
-  onDelete,
-}) {
+export default function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
   const urgency = getUrgency(task);
   const checked = isCheckedToday(task);
 
   return (
     <SwipeCard
-      leftAction={{
-        label: "編輯",
-        icon: <Pencil size={18} />,
-        onClick: () => onEdit(task),
-      }}
+      leftAction={
+        checked
+          ? null
+          : {
+              label: "編輯",
+              icon: <Pencil size={18} />,
+              onClick: () => onEdit(task),
+            }
+      }
       rightAction={{
         label: "刪除",
         icon: <Trash2 size={18} />,

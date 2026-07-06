@@ -1,10 +1,16 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 export default function SwipeCard({ children, leftAction, rightAction }) {
   const [open, setOpen] = useState(false);
   const startX = useRef(0);
   const dragging = useRef(false);
   const moved = useRef(false);
+
+  const actions = useMemo(() => {
+    return [leftAction, rightAction].filter(Boolean);
+  }, [leftAction, rightAction]);
+
+  const openDistance = actions.length === 1 ? 58 : 116;
 
   function handleStart(clientX) {
     startX.current = clientX;
@@ -17,7 +23,7 @@ export default function SwipeCard({ children, leftAction, rightAction }) {
 
     const delta = startX.current - clientX;
 
-    if (delta > 35) {
+    if (delta > 35 && actions.length > 0) {
       setOpen(true);
       moved.current = true;
     }
@@ -42,31 +48,26 @@ export default function SwipeCard({ children, leftAction, rightAction }) {
   }
 
   return (
-    <div className={`swipe-wrap ${open ? "open" : ""}`}>
+    <div
+      className={`swipe-wrap ${open ? "open" : ""}`}
+      style={{ "--swipe-open-distance": `-${openDistance}px` }}
+      data-action-count={actions.length}
+    >
       <div className="swipe-actions">
-        <button
-          className="swipe-btn edit"
-          onClick={(e) => {
-            e.stopPropagation();
-            leftAction.onClick();
-            setOpen(false);
-          }}
-          aria-label={leftAction.label}
-        >
-          {leftAction.icon}
-        </button>
-
-        <button
-          className={`swipe-btn ${rightAction.danger ? "delete" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            rightAction.onClick();
-            setOpen(false);
-          }}
-          aria-label={rightAction.label}
-        >
-          {rightAction.icon}
-        </button>
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            className={`swipe-btn ${action.danger ? "delete" : "edit"}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              action.onClick();
+              setOpen(false);
+            }}
+            aria-label={action.label}
+          >
+            {action.icon}
+          </button>
+        ))}
       </div>
 
       <div

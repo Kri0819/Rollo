@@ -318,3 +318,17 @@
 .tabs {
   display: none;
 }
+
+
+/* v0.1.12 slower sliding tab motion */
+.top-switch-slider {
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.top-switch-item {
+  transition:
+    color 0.32s ease,
+    transform 0.32s ease;
+}
