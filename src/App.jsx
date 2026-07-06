@@ -6,7 +6,7 @@ import { todayKey, dateKey } from "./utils/date";
 import { load, save } from "./utils/storage";
 
 import Header from "./components/Header";
-import BottomNav from "./components/BottomNav";
+import TopSwitch from "./components/TopSwitch";
 import TodoPage from "./components/TodoPage";
 import DonePage from "./components/DonePage";
 import TaskModal from "./components/TaskModal";
@@ -241,6 +241,7 @@ export default function App() {
   return (
     <div className={`app theme-${theme}`}>
       <Header onOpenSettings={() => setSettingsOpen(true)} />
+      <TopSwitch activeTab={tab} onChangeTab={setTab} />
 
       <main className="content">
         {tab === "todo" ? (
@@ -272,8 +273,6 @@ export default function App() {
           +
         </button>
       )}
-
-      <BottomNav activeTab={tab} onChangeTab={setTab} />
 
       {taskModal && (
         <TaskModal
