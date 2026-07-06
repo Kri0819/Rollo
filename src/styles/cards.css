@@ -320,3 +320,60 @@
 .task-side {
   padding-right: 2px;
 }
+
+
+/* v0.1.11 swipe push + tag centering */
+.swipe-wrap {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.swipe-actions {
+  inset: 0 10px 0 auto;
+  width: 98px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  z-index: 0;
+  justify-content: flex-end;
+}
+
+.swipe-content {
+  z-index: 1;
+  transition: transform 0.22s ease;
+  will-change: transform;
+  cursor: grab;
+}
+
+.swipe-content:active {
+  cursor: grabbing;
+}
+
+.swipe-wrap.open .swipe-content {
+  transform: translateX(-96px);
+}
+
+.swipe-wrap.open .task-side {
+  opacity: 1;
+}
+
+.tag {
+  height: 24px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.task-line {
+  align-items: center;
+}
+
+.task-title {
+  line-height: 1.25;
+}

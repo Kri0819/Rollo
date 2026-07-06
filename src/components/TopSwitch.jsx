@@ -1,34 +1,27 @@
 import { CheckCircle2, Circle } from "lucide-react";
 
 export default function TopSwitch({ activeTab, onChangeTab }) {
-  const todoActive = activeTab === "todo";
   const doneActive = activeTab === "done";
 
   return (
     <div className="top-switch-wrap">
-      <div className="top-switch">
+      <div className={`top-switch ${doneActive ? "done-active" : "todo-active"}`}>
+        <span className="top-switch-slider" />
+
         <button
-          className={`top-switch-item ${todoActive ? "active" : "compact"}`}
+          className={`top-switch-item ${activeTab === "todo" ? "active" : ""}`}
           onClick={() => onChangeTab("todo")}
           aria-label="待辦"
         >
-          {todoActive ? (
-            <span>待辦</span>
-          ) : (
-            <Circle size={18} strokeWidth={2.4} />
-          )}
+          {activeTab === "todo" ? <span>待辦</span> : <Circle size={18} />}
         </button>
 
         <button
-          className={`top-switch-item ${doneActive ? "active" : "compact"}`}
+          className={`top-switch-item ${activeTab === "done" ? "active" : ""}`}
           onClick={() => onChangeTab("done")}
           aria-label="已完成"
         >
-          {doneActive ? (
-            <span>已完成</span>
-          ) : (
-            <CheckCircle2 size={18} strokeWidth={2.4} />
-          )}
+          {activeTab === "done" ? <span>已完成</span> : <CheckCircle2 size={18} />}
         </button>
       </div>
     </div>

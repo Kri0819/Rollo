@@ -297,3 +297,16 @@ input[type="time"] {
   line-height: 1;
   overflow: hidden;
 }
+
+
+/* v0.1.11 field text alignment */
+select,
+input[type="date"],
+input[type="time"],
+.detail-grid strong {
+  text-align: center;
+}
+
+select {
+  text-align-last: center;
+}

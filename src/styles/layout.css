@@ -241,3 +241,80 @@
   height: 68px;
   font-size: 40px;
 }
+
+
+/* v0.1.11 sliding top switch */
+.top-switch-wrap {
+  padding: 8px 14px 8px;
+}
+
+.top-switch {
+  width: 100%;
+  height: 42px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 42px;
+  gap: 8px;
+}
+
+.top-switch.done-active {
+  grid-template-columns: 42px 1fr;
+}
+
+.top-switch-slider {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(100% - 50px);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-soft);
+  box-shadow: 0 3px 10px rgba(76, 62, 38, 0.06);
+  transition:
+    transform 0.24s ease,
+    width 0.24s ease;
+}
+
+.top-switch.done-active .top-switch-slider {
+  transform: translateX(50px);
+}
+
+.top-switch-item {
+  position: relative;
+  z-index: 1;
+  height: 42px;
+  min-width: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.top-switch-item.active {
+  width: auto;
+  padding: 0 18px;
+  color: var(--orange);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.top-switch-item:not(.active) {
+  width: 42px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 3px 10px rgba(76, 62, 38, 0.08);
+}
+
+.top-switch.done-active .top-switch-item:not(.active) {
+  grid-column: 1;
+}
+
+.tabs {
+  display: none;
+}

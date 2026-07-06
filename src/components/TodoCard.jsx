@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Check, Pencil, Trash2 } from "lucide-react";
 import { getUrgency, isCheckedToday } from "../utils/date";
 import SwipeCard from "./SwipeCard";
@@ -7,41 +6,11 @@ export default function TodoCard({
   task,
   tag,
   onCheck,
-  onUncheck,
   onEdit,
   onDelete,
 }) {
   const urgency = getUrgency(task);
   const checked = isCheckedToday(task);
-  const longPressTimer = useRef(null);
-  const longPressed = useRef(false);
-
-  function startPress() {
-    longPressed.current = false;
-
-    if (!checked) return;
-
-    longPressTimer.current = window.setTimeout(() => {
-      longPressed.current = true;
-      onUncheck(task);
-    }, 520);
-  }
-
-  function endPress() {
-    if (longPressTimer.current) {
-      window.clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }
-
-  function handleClick() {
-    if (longPressed.current) {
-      longPressed.current = false;
-      return;
-    }
-
-    onCheck(task);
-  }
 
   return (
     <SwipeCard
@@ -59,11 +28,7 @@ export default function TodoCard({
     >
       <article
         className={`task-card todo-card ${checked ? "checked" : ""}`}
-        onPointerDown={startPress}
-        onPointerUp={endPress}
-        onPointerCancel={endPress}
-        onPointerLeave={endPress}
-        onClick={handleClick}
+        onClick={() => onCheck(task)}
       >
         <div className="task-main">
           <div className="task-line">

@@ -56,7 +56,6 @@ export default function App() {
   const [tab, setTab] = useState("todo");
   const [taskModal, setTaskModal] = useState(null);
   const [detailTask, setDetailTask] = useState(null);
-  const [todoDetailTask, setTodoDetailTask] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState("");
@@ -151,19 +150,15 @@ export default function App() {
   }
 
   function checkTask(task) {
-    if (isCheckedToday(task)) {
-      setTodoDetailTask(task);
-      return;
-    }
-
     const now = new Date().toISOString();
+    const checked = isCheckedToday(task);
 
     setTasks((prev) =>
       prev.map((item) =>
         item.id === task.id
           ? {
               ...item,
-              checkedAt: now,
+              checkedAt: checked ? null : now,
               updatedAt: now,
             }
           : item
@@ -185,8 +180,6 @@ export default function App() {
           : item
       )
     );
-
-    setTodoDetailTask(null);
   }
 
   function restoreTask(task) {
@@ -299,16 +292,6 @@ export default function App() {
         />
       )}
 
-      {todoDetailTask && (
-        <DoneDetailModal
-          task={todoDetailTask}
-          tag={tagMap[todoDetailTask.tagId]}
-          onClose={() => setTodoDetailTask(null)}
-          onRestore={() => uncheckTask(todoDetailTask)}
-          onDelete={() => deleteTask(todoDetailTask)}
-          mode="checked"
-        />
-      )}
 
       {detailTask && (
         <DoneDetailModal

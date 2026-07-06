@@ -1,7 +1,7 @@
 import EmptyState from "./EmptyState";
 import TodoCard from "./TodoCard";
 
-export default function TodoPage({ tasks, tagMap, onCheck, onUncheck, onEdit, onDelete }) {
+export default function TodoPage({ tasks, tagMap, onCheck, onEdit, onDelete }) {
   if (!tasks.length) {
     return (
       <EmptyState
@@ -19,7 +19,6 @@ export default function TodoPage({ tasks, tagMap, onCheck, onUncheck, onEdit, on
           task={task}
           tag={tagMap[task.tagId]}
           onCheck={onCheck}
-          onUncheck={onUncheck}
           onEdit={onEdit}
           onDelete={onDelete}
         />
