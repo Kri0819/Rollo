@@ -1,0 +1,153 @@
+.topbar {
+  height: 64px;
+  padding: 14px 18px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-ball {
+  width: 22px;
+  height: 22px;
+  display: block;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f6c070 0 20%,
+    var(--orange) 45%,
+    #d86d3d 100%
+  );
+  position: relative;
+}
+
+.brand-ball::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 12px;
+  width: 22px;
+  height: 7px;
+  border-bottom: 2px solid #ec9b7b;
+  border-radius: 999px;
+  transform: rotate(-8deg);
+  opacity: 0.7;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.brand p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.content {
+  flex: 1;
+  padding: 8px 14px 96px;
+  overflow-y: auto;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fab {
+  position: fixed;
+  right: max(20px, calc(50vw - 220px));
+  bottom: 76px;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #e89a3f, #df6f43);
+  color: #fff;
+  box-shadow: 0 9px 22px var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.tabs {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--card);
+}
+
+.tabs button {
+  border: 0;
+  border-radius: 14px;
+  padding: 9px 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tabs button.active {
+  background: var(--card-soft);
+  color: var(--orange);
+}
+
+.empty {
+  height: 58vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-ball {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f7c477 0 22%,
+    var(--orange) 52%,
+    #d86d3d 100%
+  );
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.empty-ball::before {
+  content: "";
+  position: absolute;
+  right: 36px;
+  top: 18px;
+  width: 70px;
+  border-top: 2px dotted var(--line);
+}
+
+.empty h2 {
+  margin: 0 0 7px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.empty p {
+  margin: 0;
+  font-size: 13px;
+}

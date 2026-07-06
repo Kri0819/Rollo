@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "PingFang TC",
+    "Noto Sans TC",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #eee6d7;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.theme-light {
+  --bg: #f7f2e6;
+  --card: #fffdf8;
+  --card-soft: #f2ebdd;
+  --text: #2f2a20;
+  --muted: #9a8f7b;
+  --line: #e3d8c3;
+  --shadow: rgba(76, 62, 38, 0.12);
+
+  --orange: #df8338;
+  --red: #d7543f;
+  --yellow: #c99a20;
+  --green: #6f9d68;
+  --blue: #5f83b2;
+}
+
+.theme-dark {
+  --bg: #201b14;
+  --card: #2d261d;
+  --card-soft: #392f22;
+  --text: #f6eddf;
+  --muted: #a99d88;
+  --line: #4a3d2c;
+  --shadow: rgba(0, 0, 0, 0.38);
+
+  --orange: #ef9a4d;
+  --red: #f07260;
+  --yellow: #e3b94d;
+  --green: #8ab980;
+  --blue: #92b4df;
+}
+
+.app {
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: var(--card-soft);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 82px;
+  transform: translateX(-50%);
+  z-index: 80;
+  background: rgba(30, 24, 16, 0.88);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13px;
+}

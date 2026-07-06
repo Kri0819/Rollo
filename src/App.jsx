@@ -1,86 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Plus,
-  Settings,
-  Pencil,
-  Trash2,
-  RotateCcw,
-  X,
-  Check,
-  LogOut,
-  Sun,
-  Moon,
-} from "lucide-react";
 import "./styles.css";
 
-const STORAGE_KEY = "rollo:tasks:v011";
-const TAGS_KEY = "rollo:tags:v011";
-const SETTINGS_KEY = "rollo:settings:v011";
+import { DEFAULT_TAGS, MAX_TAGS, STORAGE_KEYS } from "./constants/defaults";
+import { todayKey, dateKey } from "./utils/date";
+import { load, save } from "./utils/storage";
 
-const DEFAULT_TAGS = [
-  { id: "work", name: "工作" },
-  { id: "life", name: "生活" },
-  { id: "important", name: "重要" },
-  { id: "waiting", name: "等待中" },
-];
-
-const MAX_TAGS = 5;
+import Header from "./components/Header";
+import BottomNav from "./components/BottomNav";
+import TodoPage from "./components/TodoPage";
+import DonePage from "./components/DonePage";
+import TaskModal from "./components/TaskModal";
+import DoneDetailModal from "./components/DoneDetailModal";
+import SettingsSheet from "./components/SettingsSheet";
+import ConfirmDialog from "./components/ConfirmDialog";
 
 function uid() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function todayKey() {
-  const d = new Date();
-  return dateKey(d);
-}
-
-function dateKey(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function parseLocalDate(date, time = "00:00") {
-  if (!date) return null;
-  const [y, m, d] = date.split("-").map(Number);
-  const [hh = 0, mm = 0] = (time || "00:00").split(":").map(Number);
-  return new Date(y, m - 1, d, hh, mm);
-}
-
-function formatDate(date) {
-  if (!date) return "--";
-  const [, m, d] = date.split("-").map(Number);
-  return `${m}/${d}`;
-}
-
-function formatTime(time) {
-  return time || "--";
-}
-
-function formatDateTime(iso) {
-  if (!iso) return { date: "--", time: "--" };
-  const d = new Date(iso);
-  return {
-    date: `${d.getMonth() + 1}/${d.getDate()}`,
-    time: `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`,
-  };
-}
-
-function getUrgency(task) {
-  if (!task.dueDate) return { level: "green", text: "" };
-
-  const due = parseLocalDate(task.dueDate, task.dueTime || "23:59");
-  const now = new Date();
-  const diffMs = due - now;
-  const diffDays = Math.ceil(diffMs / 86400000);
-
-  if (diffMs < 0) return { level: "red", text: "已逾期" };
-  if (diffDays <= 0) return { level: "red", text: "今日截止" };
-  if (diffDays <= 3) return { level: "orange", text: `還有 ${diffDays} 天` };
-  if (diffDays <= 7) return { level: "yellow", text: "" };
-  return { level: "green", text: "" };
 }
 
 function isCheckedToday(task) {
@@ -91,6 +26,7 @@ function isCheckedToday(task) {
 function normalizeTasks(tasks) {
   return tasks.map((task) => {
     if (task.isCompleted) return task;
+
     if (task.checkedAt && !isCheckedToday(task)) {
       return {
         ...task,
@@ -98,69 +34,82 @@ function normalizeTasks(tasks) {
         completedAt: task.completedAt || task.checkedAt,
       };
     }
+
     return task;
   });
 }
 
-function load(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function save(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
 export default function App() {
-  const [tasks, setTasks] = useState(() => normalizeTasks(load(STORAGE_KEY, [])));
-  const [tags, setTags] = useState(() => load(TAGS_KEY, DEFAULT_TAGS));
-  const [theme, setTheme] = useState(() => load(SETTINGS_KEY, { theme: "light" }).theme || "light");
+  const [tasks, setTasks] = useState(() =>
+    normalizeTasks(load(STORAGE_KEYS.tasks, []))
+  );
+
+  const [tags, setTags] = useState(() => {
+    const saved = load(STORAGE_KEYS.tags, DEFAULT_TAGS);
+    return saved.map((tag) => ({ id: tag.id, name: tag.name }));
+  });
+
+  const [theme, setTheme] = useState(() => {
+    return load(STORAGE_KEYS.settings, { theme: "light" }).theme || "light";
+  });
 
   const [tab, setTab] = useState("todo");
-  const [taskModal, setTaskModal] = useState(null); // null | { mode, task }
+  const [taskModal, setTaskModal] = useState(null);
   const [detailTask, setDetailTask] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    save(STORAGE_KEY, tasks);
+    save(STORAGE_KEYS.tasks, tasks);
   }, [tasks]);
 
   useEffect(() => {
-    save(TAGS_KEY, tags);
+    save(STORAGE_KEYS.tags, tags);
   }, [tags]);
 
   useEffect(() => {
-    save(SETTINGS_KEY, { theme });
+    save(STORAGE_KEYS.settings, { theme });
   }, [theme]);
 
   const tagMap = useMemo(() => {
-    return Object.fromEntries(tags.map((t) => [t.id, t]));
+    return Object.fromEntries(tags.map((tag) => [tag.id, tag]));
   }, [tags]);
 
   const todoTasks = useMemo(() => {
     return tasks
-      .filter((t) => !t.isCompleted)
+      .filter((task) => !task.isCompleted)
       .sort((a, b) => {
         const aChecked = isCheckedToday(a) ? 1 : 0;
         const bChecked = isCheckedToday(b) ? 1 : 0;
+
         if (aChecked !== bChecked) return aChecked - bChecked;
 
         const order = { red: 0, orange: 1, yellow: 2, green: 3 };
-        return order[getUrgency(a).level] - order[getUrgency(b).level];
+        return order[getUrgencyLevel(a)] - order[getUrgencyLevel(b)];
       });
   }, [tasks]);
 
   const doneTasks = useMemo(() => {
     return tasks
-      .filter((t) => t.isCompleted)
+      .filter((task) => task.isCompleted)
       .sort((a, b) => (b.completedAt || "").localeCompare(a.completedAt || ""));
   }, [tasks]);
+
+  function getUrgencyLevel(task) {
+    if (!task.dueDate) return "green";
+
+    const due = new Date(`${task.dueDate}T${task.dueTime || "23:59"}`);
+    const now = new Date();
+    const diffMs = due - now;
+    const diffDays = Math.ceil(diffMs / 86400000);
+
+    if (diffMs < 0) return "red";
+    if (diffDays <= 0) return "red";
+    if (diffDays <= 3) return "orange";
+    if (diffDays <= 7) return "yellow";
+    return "green";
+  }
 
   function upsertTask(data) {
     const now = new Date().toISOString();
@@ -172,6 +121,7 @@ export default function App() {
             ? {
                 ...task,
                 ...data,
+                dueTime: data.dueDate ? data.dueTime : "",
                 updatedAt: now,
               }
             : task
@@ -185,7 +135,7 @@ export default function App() {
           title: data.title,
           tagId: data.tagId || "",
           dueDate: data.dueDate || "",
-          dueTime: data.dueTime || "",
+          dueTime: data.dueDate ? data.dueTime || "" : "",
           note: data.note || "",
           checkedAt: null,
           completedAt: null,
@@ -203,34 +153,37 @@ export default function App() {
     if (isCheckedToday(task)) return;
 
     const now = new Date().toISOString();
+
     setTasks((prev) =>
-      prev.map((t) =>
-        t.id === task.id
+      prev.map((item) =>
+        item.id === task.id
           ? {
-              ...t,
+              ...item,
               checkedAt: now,
               updatedAt: now,
             }
-          : t
+          : item
       )
     );
   }
 
   function restoreTask(task) {
     const now = new Date().toISOString();
+
     setTasks((prev) =>
-      prev.map((t) =>
-        t.id === task.id
+      prev.map((item) =>
+        item.id === task.id
           ? {
-              ...t,
+              ...item,
               isCompleted: false,
               checkedAt: null,
               completedAt: null,
               updatedAt: now,
             }
-          : t
+          : item
       )
     );
+
     setDetailTask(null);
   }
 
@@ -241,7 +194,7 @@ export default function App() {
       confirmText: "刪除",
       danger: true,
       onConfirm: () => {
-        setTasks((prev) => prev.filter((t) => t.id !== task.id));
+        setTasks((prev) => prev.filter((item) => item.id !== task.id));
         setDetailTask(null);
         setConfirm(null);
       },
@@ -249,35 +202,23 @@ export default function App() {
   }
 
   function addTag(name) {
-  const clean = name.trim();
-  if (!clean) return false;
-  if (tags.length >= MAX_TAGS) return false;
-  if (tags.some((tag) => tag.name === clean)) return false;
+    const clean = name.trim();
+    if (!clean) return false;
+    if (tags.length >= MAX_TAGS) return false;
+    if (tags.some((tag) => tag.name === clean)) return false;
 
-  setTags((prev) => [...prev, { id: uid(), name: clean }]);
-  return true;
-}
+    setTags((prev) => [...prev, { id: uid(), name: clean }]);
+    return true;
+  }
 
   function logoutPlaceholder() {
-    setToast("目前是本機版本，還沒有登入系統");
+    setToast("目前是本機版本，尚未啟用登入");
     setTimeout(() => setToast(""), 1800);
   }
 
   return (
     <div className={`app theme-${theme}`}>
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-ball" />
-          <div>
-            <h1>滾滾</h1>
-            <p>Rollo</p>
-          </div>
-        </div>
-
-        <button className="icon-btn" onClick={() => setSettingsOpen(true)} aria-label="設定">
-          <Settings size={20} />
-        </button>
-      </header>
+      <Header onOpenSettings={() => setSettingsOpen(true)} />
 
       <main className="content">
         {tab === "todo" ? (
@@ -300,19 +241,16 @@ export default function App() {
       </main>
 
       {tab === "todo" && (
-        <button className="fab" onClick={() => setTaskModal({ mode: "add", task: null })}>
-          <Plus size={28} />
+        <button
+          className="fab"
+          onClick={() => setTaskModal({ mode: "add", task: null })}
+          aria-label="新增事項"
+        >
+          +
         </button>
       )}
 
-      <nav className="tabs">
-        <button className={tab === "todo" ? "active" : ""} onClick={() => setTab("todo")}>
-          待辦
-        </button>
-        <button className={tab === "done" ? "active" : ""} onClick={() => setTab("done")}>
-          已完成
-        </button>
-      </nav>
+      <BottomNav activeTab={tab} onChangeTab={setTab} />
 
       {taskModal && (
         <TaskModal
@@ -336,7 +274,7 @@ export default function App() {
       )}
 
       {settingsOpen && (
-        <SettingsModal
+        <SettingsSheet
           theme={theme}
           setTheme={setTheme}
           tags={tags}
@@ -347,604 +285,9 @@ export default function App() {
         />
       )}
 
-      {confirm && (
-        <ConfirmDialog
-          {...confirm}
-          onCancel={() => setConfirm(null)}
-        />
-      )}
+      {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
 
       {toast && <div className="toast">{toast}</div>}
-    </div>
-  );
-}
-
-function TodoPage({ tasks, tagMap, onCheck, onEdit, onDelete }) {
-  if (!tasks.length) {
-    return (
-      <EmptyState
-        title="待辦清單空空的"
-        subtitle="新增一件事，讓它開始每天滾動吧"
-      />
-    );
-  }
-
-  return (
-    <div className="list">
-      {tasks.map((task) => (
-        <TodoCard
-          key={task.id}
-          task={task}
-          tag={tagMap[task.tagId]}
-          onCheck={onCheck}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
-    </div>
-  );
-}
-
-function DonePage({ tasks, tagMap, onOpen, onRestore, onDelete }) {
-  if (!tasks.length) {
-    return (
-      <EmptyState
-        title="還沒有完成的事項"
-        subtitle="今天打勾的事情，明天會滾到這裡"
-      />
-    );
-  }
-
-  return (
-    <div className="list">
-      {tasks.map((task) => (
-        <DoneCard
-          key={task.id}
-          task={task}
-          tag={tagMap[task.tagId]}
-          onOpen={onOpen}
-          onRestore={onRestore}
-          onDelete={onDelete}
-        />
-      ))}
-    </div>
-  );
-}
-
-function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
-  const urgency = getUrgency(task);
-  const checked = isCheckedToday(task);
-
-  return (
-    <SwipeCard
-      leftAction={{
-        label: "編輯",
-        icon: <Pencil size={18} />,
-        onClick: () => onEdit(task),
-      }}
-      rightAction={{
-        label: "刪除",
-        icon: <Trash2 size={18} />,
-        onClick: () => onDelete(task),
-        danger: true,
-      }}
-    >
-      <article
-        className={`task-card todo-card ${checked ? "checked" : ""}`}
-        onClick={() => onCheck(task)}
-      >
-        <div className="task-main">
-          <div className="task-line">
-            <h2 className={`task-title urgency-${urgency.level}`}>{task.title}</h2>
-            {tag ? <span className="tag">{tag.name}</span> : null}
-          </div>
-
-          <p className="task-note">{task.note || " "}</p>
-        </div>
-
-        <div className="task-side">
-          <div className={`urgency-text urgency-${urgency.level}`}>
-            {urgency.text}
-          </div>
-
-          <div className={`check-circle ${checked ? "checked" : ""}`}>
-            {checked ? <Check size={17} strokeWidth={3} /> : null}
-          </div>
-        </div>
-      </article>
-    </SwipeCard>
-  );
-}
-
-function DoneCard({ task, tag, onOpen, onRestore, onDelete }) {
-  return (
-    <SwipeCard
-      leftAction={{
-        label: "復原",
-        icon: <RotateCcw size={18} />,
-        onClick: () => onRestore(task),
-      }}
-      rightAction={{
-        label: "刪除",
-        icon: <Trash2 size={18} />,
-        onClick: () => onDelete(task),
-        danger: true,
-      }}
-    >
-      <article className="task-card done-card" onClick={() => onOpen(task)}>
-        <div className="task-main">
-          <div className="task-line">
-            <h2 className="task-title done-title">{task.title}</h2>
-            {tag ? <span className="tag">{tag.name}</span> : null}
-          </div>
-        </div>
-
-        <div className="done-check">
-          <Check size={17} strokeWidth={3} />
-        </div>
-      </article>
-    </SwipeCard>
-  );
-}
-
-function SwipeCard({ children, leftAction, rightAction }) {
-  const [open, setOpen] = useState(false);
-
-  let startX = 0;
-
-  function onTouchStart(e) {
-    startX = e.touches[0].clientX;
-  }
-
-  function onTouchEnd(e) {
-    const endX = e.changedTouches[0].clientX;
-    if (startX - endX > 40) setOpen(true);
-    if (endX - startX > 40) setOpen(false);
-  }
-
-  return (
-    <div className={`swipe-wrap ${open ? "open" : ""}`}>
-      <div className="swipe-actions">
-        <button
-          className="swipe-btn edit"
-          onClick={(e) => {
-            e.stopPropagation();
-            leftAction.onClick();
-            setOpen(false);
-          }}
-        >
-          {leftAction.icon}
-        </button>
-
-        <button
-          className={`swipe-btn ${rightAction.danger ? "delete" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            rightAction.onClick();
-            setOpen(false);
-          }}
-        >
-          {rightAction.icon}
-        </button>
-      </div>
-
-      <div
-        className="swipe-content"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        onDoubleClick={() => setOpen((v) => !v)}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function TaskModal({ mode, task, tags, onClose, onSave, onDelete }) {
-  const [title, setTitle] = useState(task?.title || "");
-  const [tagId, setTagId] = useState(task?.tagId || "");
-  const [dueDate, setDueDate] = useState(task?.dueDate || "");
-  const [dueTime, setDueTime] = useState(task?.dueTime || "");
-  const [note, setNote] = useState(task?.note || "");
-
-  function submit() {
-    if (!title.trim()) return;
-
-    onSave({
-      id: task?.id,
-      title: title.trim(),
-      tagId,
-      dueDate,
-      dueTime: dueDate ? dueTime : "",
-      note: note.trim(),
-    });
-  }
-
-  return (
-    <CenterModal onClose={onClose}>
-      <div className="modal-head">
-        <h2>{mode === "edit" ? "編輯事項" : "新增事項"}</h2>
-        <button className="icon-btn" onClick={onClose}>
-          <X size={20} />
-        </button>
-      </div>
-
-      <div className="form-grid title-row">
-        <label>
-          <span>事件名稱</span>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="活動報名表"
-            autoFocus
-          />
-        </label>
-
-        <label>
-          <span>標籤</span>
-          <select value={tagId} onChange={(e) => setTagId(e.target.value)}>
-            <option value="">--</option>
-            {tags.map((tag) => (
-              <option key={tag.id} value={tag.id}>
-                {tag.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="form-grid half">
-        <label>
-          <span>截止日期</span>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>截止時間</span>
-          <input
-            type="time"
-            value={dueTime}
-            disabled={!dueDate}
-            onChange={(e) => setDueTime(e.target.value)}
-          />
-        </label>
-      </div>
-
-      <label className="full-field">
-        <span>備註</span>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="補充細節"
-          rows={3}
-        />
-      </label>
-
-      <button className="primary-btn" onClick={submit}>
-        {mode === "edit" ? "儲存" : "新增"}
-      </button>
-
-      {onDelete && (
-        <button className="danger-text-btn" onClick={onDelete}>
-          刪除事項
-        </button>
-      )}
-    </CenterModal>
-  );
-}
-
-function DoneDetailModal({ task, tag, onClose, onRestore, onDelete }) {
-  const completed = formatDateTime(task.completedAt || task.checkedAt);
-
-  return (
-    <CenterModal onClose={onClose}>
-      <div className="modal-head">
-        <h2>完成詳情</h2>
-        <button className="icon-btn" onClick={onClose}>
-          <X size={20} />
-        </button>
-      </div>
-
-      <div className="detail-grid title-row">
-        <div>
-          <span>名稱</span>
-          <strong>{task.title}</strong>
-        </div>
-
-        <div>
-          <span>標籤</span>
-          <strong>{tag?.name || "--"}</strong>
-        </div>
-      </div>
-
-      <div className="detail-grid half">
-        <div>
-          <span>原定完成日期</span>
-          <strong>{formatDate(task.dueDate)}</strong>
-        </div>
-
-        <div>
-          <span>原定完成時間</span>
-          <strong>{formatTime(task.dueTime)}</strong>
-        </div>
-      </div>
-
-      <div className="detail-grid half">
-        <div>
-          <span>實際完成日期</span>
-          <strong>{completed.date}</strong>
-        </div>
-
-        <div>
-          <span>實際完成時間</span>
-          <strong>{completed.time}</strong>
-        </div>
-      </div>
-
-      <div className="detail-note">
-        <span>備註</span>
-        <p>{task.note || "--"}</p>
-      </div>
-
-      <div className="modal-actions two">
-        <button className="secondary-btn" onClick={onRestore}>
-          復原
-        </button>
-        <button className="danger-btn" onClick={onDelete}>
-          刪除
-        </button>
-      </div>
-    </CenterModal>
-  );
-}
-
-function SettingsModal({ theme, setTheme, tags, setTags, onAddTag, onLogout, onClose }) {
-  const [screen, setScreen] = useState("main");
-  const [newTag, setNewTag] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [editingName, setEditingName] = useState("");
-
-  function removeTag(id) {
-    setTags((prev) => prev.filter((tag) => tag.id !== id));
-  }
-
-  function startEdit(tag) {
-    setEditingId(tag.id);
-    setEditingName(tag.name);
-  }
-
-  function commitEdit() {
-    const clean = editingName.trim();
-
-    if (editingId && clean) {
-      setTags((prev) =>
-        prev.map((tag) =>
-          tag.id === editingId ? { ...tag, name: clean } : tag
-        )
-      );
-    }
-
-    setEditingId(null);
-    setEditingName("");
-  }
-
-  function handleAddTag() {
-    const ok = onAddTag(newTag);
-    if (ok) setNewTag("");
-  }
-
-  const title =
-    screen === "main"
-      ? "設定"
-      : screen === "tags"
-      ? "編輯標籤"
-      : "關於";
-
-  return (
-    <BottomSheet onClose={onClose}>
-      <div className="settings-head">
-        <h2>{title}</h2>
-        <button className="settings-close" onClick={onClose}>
-          <X size={22} />
-        </button>
-      </div>
-
-      {screen === "main" && (
-        <div className="settings-body">
-          <section className="settings-section">
-            <p className="settings-section-title">帳號</p>
-
-            <div className="settings-account-card">
-              <div className="settings-avatar">R</div>
-              <div className="settings-account-name">Rollo 本機版</div>
-              <div className="settings-account-sub">本機帳號</div>
-            </div>
-          </section>
-
-          <section className="settings-section">
-            <p className="settings-section-title">外觀</p>
-
-            <div className="settings-appearance-card">
-              <span>外觀</span>
-
-              <div className="mini-theme-toggle">
-                <button
-                  className={theme === "light" ? "active" : ""}
-                  onClick={() => setTheme("light")}
-                >
-                  <Sun size={15} />
-                  淺色
-                </button>
-
-                <button
-                  className={theme === "dark" ? "active" : ""}
-                  onClick={() => setTheme("dark")}
-                >
-                  <Moon size={15} />
-                  深色
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section className="settings-section">
-            <p className="settings-section-title">標籤</p>
-
-            <button className="settings-list-row" onClick={() => setScreen("tags")}>
-              <span>編輯標籤</span>
-              <span className="settings-row-right">
-                {tags.length} 個
-                <span className="settings-chevron">›</span>
-              </span>
-            </button>
-          </section>
-
-          <section className="settings-section">
-            <p className="settings-section-title">其他</p>
-
-            <button className="settings-list-row" onClick={() => setScreen("about")}>
-              <span>關於</span>
-              <span className="settings-chevron">›</span>
-            </button>
-
-            <button className="settings-logout-row" onClick={onLogout}>
-              登出
-            </button>
-          </section>
-        </div>
-      )}
-
-      {screen === "tags" && (
-        <div className="settings-body">
-          <button className="settings-back" onClick={() => setScreen("main")}>
-            ← 返回設定
-          </button>
-
-          <p className="settings-section-title">
-            目前的標籤（{tags.length}/{MAX_TAGS}）
-          </p>
-
-          <div className="tag-manage-list">
-            {tags.map((tag) => (
-              <div className="tag-manage-row" key={tag.id}>
-                {editingId === tag.id ? (
-                  <input
-                    className="tag-edit-input"
-                    value={editingName}
-                    autoFocus
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onBlur={commitEdit}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") commitEdit();
-                    }}
-                  />
-                ) : (
-                  <span className="tag-name-display">{tag.name}</span>
-                )}
-
-                <div className="tag-manage-actions">
-                  <button onClick={() => startEdit(tag)}>
-                    <Pencil size={18} />
-                  </button>
-
-                  <button className="danger" onClick={() => removeTag(tag.id)}>
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="settings-section-title add-title">新增標籤</p>
-
-          <div className="settings-add-tag-row">
-            <input
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              placeholder="標籤名稱"
-              maxLength={12}
-            />
-
-            <button
-              onClick={handleAddTag}
-              disabled={!newTag.trim() || tags.length >= MAX_TAGS}
-            >
-              新增
-            </button>
-          </div>
-        </div>
-      )}
-
-      {screen === "about" && (
-        <div className="settings-body">
-          <button className="settings-back" onClick={() => setScreen("main")}>
-            ← 返回設定
-          </button>
-
-          <div className="about-card">
-            <div className="about-ball" />
-            <h3>滾滾 Rollo</h3>
-            <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.3</p>
-          </div>
-        </div>
-      )}
-    </BottomSheet>
-  );
-}
-
-function ConfirmDialog({ title, message, confirmText, danger, onConfirm, onCancel }) {
-  return (
-    <CenterModal onClose={onCancel} small>
-      <h2 className="confirm-title">{title}</h2>
-      <p className="confirm-message">{message}</p>
-
-      <div className="modal-actions two">
-        <button className="secondary-btn" onClick={onCancel}>
-          取消
-        </button>
-        <button className={danger ? "danger-btn" : "primary-btn"} onClick={onConfirm}>
-          {confirmText || "確定"}
-        </button>
-      </div>
-    </CenterModal>
-  );
-}
-
-function CenterModal({ children, onClose, small = false }) {
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div
-        className={`center-modal ${small ? "small" : ""}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function BottomSheet({ children, onClose }) {
-  return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="bottom-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function EmptyState({ title, subtitle }) {
-  return (
-    <div className="empty">
-      <div className="empty-ball" />
-      <h2>{title}</h2>
-      <p>{subtitle}</p>
     </div>
   );
 }
