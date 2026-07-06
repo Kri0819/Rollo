@@ -24,6 +24,8 @@ const DEFAULT_TAGS = [
   { id: "waiting", name: "等待中" },
 ];
 
+const MAX_TAGS = 5;
+
 function uid() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -247,10 +249,14 @@ export default function App() {
   }
 
   function addTag(name) {
-    const clean = name.trim();
-    if (!clean) return;
-    setTags((prev) => [...prev, { id: uid(), name: clean, color: "blue" }]);
-  }
+  const clean = name.trim();
+  if (!clean) return false;
+  if (tags.length >= MAX_TAGS) return false;
+  if (tags.some((tag) => tag.name === clean)) return false;
+
+  setTags((prev) => [...prev, { id: uid(), name: clean }]);
+  return true;
+}
 
   function logoutPlaceholder() {
     setToast("目前是本機版本，還沒有登入系統");
@@ -697,84 +703,196 @@ function DoneDetailModal({ task, tag, onClose, onRestore, onDelete }) {
 }
 
 function SettingsModal({ theme, setTheme, tags, setTags, onAddTag, onLogout, onClose }) {
+  const [screen, setScreen] = useState("main");
   const [newTag, setNewTag] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState("");
 
   function removeTag(id) {
-    setTags((prev) => prev.filter((t) => t.id !== id));
+    setTags((prev) => prev.filter((tag) => tag.id !== id));
   }
+
+  function startEdit(tag) {
+    setEditingId(tag.id);
+    setEditingName(tag.name);
+  }
+
+  function commitEdit() {
+    const clean = editingName.trim();
+
+    if (editingId && clean) {
+      setTags((prev) =>
+        prev.map((tag) =>
+          tag.id === editingId ? { ...tag, name: clean } : tag
+        )
+      );
+    }
+
+    setEditingId(null);
+    setEditingName("");
+  }
+
+  function handleAddTag() {
+    const ok = onAddTag(newTag);
+    if (ok) setNewTag("");
+  }
+
+  const title =
+    screen === "main"
+      ? "設定"
+      : screen === "tags"
+      ? "編輯標籤"
+      : "關於";
 
   return (
     <BottomSheet onClose={onClose}>
-      <div className="modal-head">
-        <h2>設定</h2>
-        <button className="icon-btn" onClick={onClose}>
-          <X size={20} />
+      <div className="settings-head">
+        <h2>{title}</h2>
+        <button className="settings-close" onClick={onClose}>
+          <X size={22} />
         </button>
       </div>
 
-      <section className="setting-section">
-        <h3>外觀</h3>
-        <div className="theme-row">
-          <button
-            className={theme === "light" ? "active" : ""}
-            onClick={() => setTheme("light")}
-          >
-            <Sun size={16} /> 淺色
-          </button>
-          <button
-            className={theme === "dark" ? "active" : ""}
-            onClick={() => setTheme("dark")}
-          >
-            <Moon size={16} /> 深色
-          </button>
-        </div>
-      </section>
+      {screen === "main" && (
+        <div className="settings-body">
+          <section className="settings-section">
+            <p className="settings-section-title">帳號</p>
 
-      <section className="setting-section">
-        <h3>標籤</h3>
-
-        <div className="tag-list">
-          {tags.map((tag) => (
-            <div className="tag-edit-row" key={tag.id}>
-              <input
-                value={tag.name}
-                onChange={(e) =>
-                  setTags((prev) =>
-                    prev.map((t) =>
-                      t.id === tag.id ? { ...t, name: e.target.value } : t
-                    )
-                  )
-                }
-              />
-
-              <button onClick={() => removeTag(tag.id)}>
-                <Trash2 size={15} />
-              </button>
+            <div className="settings-account-card">
+              <div className="settings-avatar">R</div>
+              <div className="settings-account-name">Rollo 本機版</div>
+              <div className="settings-account-sub">本機帳號</div>
             </div>
-          ))}
-        </div>
+          </section>
 
-        <div className="add-tag-row">
-          <input
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            placeholder="新增標籤"
-          />
-          <button
-            onClick={() => {
-              onAddTag(newTag);
-              setNewTag("");
-            }}
-          >
-            新增
+          <section className="settings-section">
+            <p className="settings-section-title">外觀</p>
+
+            <div className="settings-appearance-card">
+              <span>外觀</span>
+
+              <div className="mini-theme-toggle">
+                <button
+                  className={theme === "light" ? "active" : ""}
+                  onClick={() => setTheme("light")}
+                >
+                  <Sun size={15} />
+                  淺色
+                </button>
+
+                <button
+                  className={theme === "dark" ? "active" : ""}
+                  onClick={() => setTheme("dark")}
+                >
+                  <Moon size={15} />
+                  深色
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="settings-section">
+            <p className="settings-section-title">標籤</p>
+
+            <button className="settings-list-row" onClick={() => setScreen("tags")}>
+              <span>編輯標籤</span>
+              <span className="settings-row-right">
+                {tags.length} 個
+                <span className="settings-chevron">›</span>
+              </span>
+            </button>
+          </section>
+
+          <section className="settings-section">
+            <p className="settings-section-title">其他</p>
+
+            <button className="settings-list-row" onClick={() => setScreen("about")}>
+              <span>關於</span>
+              <span className="settings-chevron">›</span>
+            </button>
+
+            <button className="settings-logout-row" onClick={onLogout}>
+              登出
+            </button>
+          </section>
+        </div>
+      )}
+
+      {screen === "tags" && (
+        <div className="settings-body">
+          <button className="settings-back" onClick={() => setScreen("main")}>
+            ← 返回設定
           </button>
-        </div>
-      </section>
 
-      <button className="logout-btn" onClick={onLogout}>
-        <LogOut size={17} />
-        登出
-      </button>
+          <p className="settings-section-title">
+            目前的標籤（{tags.length}/{MAX_TAGS}）
+          </p>
+
+          <div className="tag-manage-list">
+            {tags.map((tag) => (
+              <div className="tag-manage-row" key={tag.id}>
+                {editingId === tag.id ? (
+                  <input
+                    className="tag-edit-input"
+                    value={editingName}
+                    autoFocus
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onBlur={commitEdit}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitEdit();
+                    }}
+                  />
+                ) : (
+                  <span className="tag-name-display">{tag.name}</span>
+                )}
+
+                <div className="tag-manage-actions">
+                  <button onClick={() => startEdit(tag)}>
+                    <Pencil size={18} />
+                  </button>
+
+                  <button className="danger" onClick={() => removeTag(tag.id)}>
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="settings-section-title add-title">新增標籤</p>
+
+          <div className="settings-add-tag-row">
+            <input
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              placeholder="標籤名稱"
+              maxLength={12}
+            />
+
+            <button
+              onClick={handleAddTag}
+              disabled={!newTag.trim() || tags.length >= MAX_TAGS}
+            >
+              新增
+            </button>
+          </div>
+        </div>
+      )}
+
+      {screen === "about" && (
+        <div className="settings-body">
+          <button className="settings-back" onClick={() => setScreen("main")}>
+            ← 返回設定
+          </button>
+
+          <div className="about-card">
+            <div className="about-ball" />
+            <h3>滾滾 Rollo</h3>
+            <p>會自己滾到明天的待辦清單。</p>
+            <p className="about-version">v0.1.3</p>
+          </div>
+        </div>
+      )}
     </BottomSheet>
   );
 }
