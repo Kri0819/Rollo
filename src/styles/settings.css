@@ -10,10 +10,10 @@
 
 .bottom-sheet {
   width: min(100%, 480px);
-  max-height: 92vh;
+  max-height: 88vh;
   overflow-y: auto;
-  border-radius: 28px 28px 0 0;
-  padding: 10px 18px calc(22px + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  padding: 9px 18px calc(20px + env(safe-area-inset-bottom));
   background: var(--bg);
   box-shadow: 0 -18px 48px rgba(0, 0, 0, 0.24);
 }
@@ -27,7 +27,7 @@
 }
 
 .settings-head {
-  min-height: 56px;
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,14 +37,14 @@
 
 .settings-head h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 900;
   letter-spacing: -0.02em;
 }
 
 .settings-close {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border: 0;
   border-radius: 999px;
   background: var(--card-soft);
@@ -55,16 +55,16 @@
 }
 
 .settings-body {
-  padding-top: 22px;
+  padding-top: 18px;
 }
 
 .settings-section {
-  margin-bottom: 24px;
+  margin-bottom: 19px;
 }
 
 .settings-section-title {
   margin: 0 0 10px;
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 800;
   color: var(--muted);
 }
@@ -74,26 +74,26 @@
 .settings-list-row,
 .settings-logout-row {
   width: 100%;
-  min-height: 62px;
+  min-height: 56px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--card);
   color: var(--text);
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 14px;
   box-shadow: 0 2px 8px rgba(76, 62, 38, 0.04);
 }
 
 .settings-account-card {
   display: grid;
-  grid-template-columns: 42px 1fr auto;
+  grid-template-columns: 38px 1fr auto;
   gap: 14px;
 }
 
 .settings-avatar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
   background: var(--text);
   color: var(--bg);
@@ -104,13 +104,13 @@
 }
 
 .settings-account-name {
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 800;
 }
 
 .settings-account-sub {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 700;
 }
 
@@ -129,8 +129,8 @@
 }
 
 .mini-theme-toggle button {
-  min-width: 72px;
-  height: 32px;
+  min-width: 66px;
+  height: 30px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -152,7 +152,7 @@
 .settings-list-row {
   justify-content: space-between;
   border: 1px solid var(--line);
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 800;
 }
 
@@ -171,7 +171,7 @@
 
 .settings-chevron {
   color: var(--muted);
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
 }
 
@@ -179,7 +179,7 @@
   margin-top: 10px;
   justify-content: flex-start;
   color: var(--red);
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 900;
 }
 
@@ -187,7 +187,7 @@
   border: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 900;
   padding: 0;
   margin-bottom: 26px;
@@ -200,9 +200,9 @@
 }
 
 .tag-manage-row {
-  min-height: 62px;
+  min-height: 56px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--card);
   display: grid;
   grid-template-columns: 1fr auto;
@@ -212,7 +212,7 @@
 }
 
 .tag-name-display {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 900;
   color: var(--text);
 }
@@ -221,7 +221,7 @@
   border: 0;
   background: transparent;
   padding: 8px 0;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 900;
 }
 
@@ -258,18 +258,18 @@
 }
 
 .settings-add-tag-row input {
-  min-height: 56px;
-  border-radius: 18px;
+  min-height: 50px;
+  border-radius: 16px;
   padding: 0 16px;
-  font-size: 16px;
+  font-size: 14.5px;
 }
 
 .settings-add-tag-row button {
   border: 0;
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--orange);
   color: #fff;
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 900;
 }
 
@@ -286,8 +286,8 @@
 }
 
 .about-ball {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   margin: 0 auto 12px;
   border-radius: 999px;
   background: radial-gradient(
@@ -313,4 +313,20 @@
 .about-version {
   margin-top: 12px !important;
   font-size: 13px;
+}
+
+
+/* visual density fixes */
+.settings-head {
+  padding-bottom: 12px;
+}
+
+.settings-account-name,
+.settings-list-row,
+.settings-logout-row {
+  letter-spacing: -0.01em;
+}
+
+.settings-section-title {
+  letter-spacing: 0;
 }

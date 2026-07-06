@@ -86,13 +86,18 @@ export default function TaskModal({ mode, task, tags, onClose, onSave, onDelete 
         />
       </label>
 
-      <button className="primary-btn" onClick={submit}>
-        {mode === "edit" ? "儲存" : "新增"}
-      </button>
-
-      {onDelete && (
-        <button className="danger-text-btn" onClick={onDelete}>
-          刪除事項
+      {onDelete ? (
+        <div className="modal-actions two">
+          <button className="primary-btn" onClick={submit}>
+            儲存
+          </button>
+          <button className="danger-btn" onClick={onDelete}>
+            刪除事項
+          </button>
+        </div>
+      ) : (
+        <button className="primary-btn" onClick={submit}>
+          新增
         </button>
       )}
     </CenterModal>

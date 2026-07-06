@@ -12,9 +12,17 @@
     sans-serif;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   margin: 0;
   background: #eee6d7;
+  overflow: hidden;
 }
 
 button,
@@ -61,6 +69,7 @@ button {
 }
 
 .app {
+  height: 100dvh;
   min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;

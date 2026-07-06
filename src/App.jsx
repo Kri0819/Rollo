@@ -150,16 +150,15 @@ export default function App() {
   }
 
   function checkTask(task) {
-    if (isCheckedToday(task)) return;
-
     const now = new Date().toISOString();
+    const checked = isCheckedToday(task);
 
     setTasks((prev) =>
       prev.map((item) =>
         item.id === task.id
           ? {
               ...item,
-              checkedAt: now,
+              checkedAt: checked ? null : now,
               updatedAt: now,
             }
           : item

@@ -26,7 +26,11 @@ export default function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
       >
         <div className="task-main">
           <div className="task-line">
-            <h2 className={`task-title urgency-${urgency.level}`}>
+            <h2
+              className={`task-title urgency-${urgency.level} ${
+                checked ? "checked-title" : ""
+              }`}
+            >
               {task.title}
             </h2>
 

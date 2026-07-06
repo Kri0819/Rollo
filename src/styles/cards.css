@@ -43,11 +43,11 @@
 }
 
 .task-card {
-  min-height: 78px;
+  min-height: 76px;
   display: grid;
-  grid-template-columns: 1fr 76px;
-  gap: 10px;
-  padding: 14px 14px 13px;
+  grid-template-columns: 1fr 58px;
+  gap: 8px;
+  padding: 13px 14px 12px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--card);
@@ -55,7 +55,7 @@
 }
 
 .task-card.checked {
-  opacity: 0.66;
+  opacity: 1;
 }
 
 .task-main {
@@ -74,13 +74,14 @@
 
 .task-title {
   margin: 0;
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.25;
   word-break: break-word;
 }
 
-.done-title {
+.done-title,
+.checked-title {
   color: var(--muted);
   text-decoration: line-through;
 }
@@ -88,7 +89,7 @@
 .task-note {
   margin: 7px 0 0;
   min-height: 18px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--muted);
   line-height: 1.45;
   word-break: break-word;
@@ -98,12 +99,12 @@
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: center;
-  justify-items: end;
+  justify-items: center;
 }
 
 .urgency-text {
   min-height: 18px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -132,7 +133,7 @@
 }
 
 .done-check {
-  justify-self: end;
+  justify-self: center;
 }
 
 .urgency-red {
@@ -155,7 +156,7 @@
   flex: 0 0 auto;
   padding: 2px 9px;
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
   background: var(--card-soft);
   color: var(--muted);
