@@ -107,8 +107,8 @@
 }
 
 .checked-title {
-  color: var(--green);
-  text-decoration-color: var(--green);
+  color: var(--muted);
+  text-decoration-color: var(--muted);
 }
 
 .task-note {
