@@ -83,7 +83,10 @@
 .done-title,
 .checked-title {
   color: var(--muted);
-  text-decoration: line-through;
+  text-decoration-line: line-through;
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 2px;
 }
 
 .task-note {
@@ -96,10 +99,13 @@
 }
 
 .task-side {
+  height: 100%;
+  min-height: 52px;
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: center;
   justify-items: center;
+  align-self: stretch;
 }
 
 .urgency-text {
@@ -107,12 +113,16 @@
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .check-circle,
 .done-check {
-  width: 27px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   border: 2px solid var(--line);
   color: #fff;

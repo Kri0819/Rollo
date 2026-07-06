@@ -8,13 +8,14 @@ export default function DoneDetailModal({
   onClose,
   onRestore,
   onDelete,
+  mode = "done",
 }) {
   const completed = formatDateTime(task.completedAt || task.checkedAt);
 
   return (
     <CenterModal onClose={onClose}>
       <div className="modal-head">
-        <h2>完成詳情</h2>
+        <h2>{mode === "checked" ? "今日已完成" : "完成詳情"}</h2>
         <button className="icon-btn" onClick={onClose} aria-label="關閉">
           <X size={20} />
         </button>
@@ -46,12 +47,12 @@ export default function DoneDetailModal({
 
       <div className="detail-grid half">
         <div>
-          <span>實際完成日期</span>
+          <span>{mode === "checked" ? "今日完成日期" : "實際完成日期"}</span>
           <strong>{completed.date}</strong>
         </div>
 
         <div>
-          <span>實際完成時間</span>
+          <span>{mode === "checked" ? "今日完成時間" : "實際完成時間"}</span>
           <strong>{completed.time}</strong>
         </div>
       </div>
@@ -63,7 +64,7 @@ export default function DoneDetailModal({
 
       <div className="modal-actions two">
         <button className="secondary-btn" onClick={onRestore}>
-          復原
+          {mode === "checked" ? "取消勾選" : "復原"}
         </button>
 
         <button className="danger-btn" onClick={onDelete}>
