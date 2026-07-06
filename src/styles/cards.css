@@ -180,3 +180,98 @@
   text-decoration-thickness: 2.5px;
   text-decoration-color: var(--green);
 }
+
+
+/* v0.1.8 card alignment + swipe overlay fixes */
+.swipe-wrap {
+  overflow: visible;
+}
+
+.swipe-actions {
+  right: 10px;
+  padding-right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 3;
+}
+
+.swipe-wrap.open .swipe-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.swipe-content {
+  transition: none;
+}
+
+.swipe-wrap.open .swipe-content {
+  transform: none;
+}
+
+.swipe-wrap.open .task-side {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.task-card {
+  grid-template-columns: minmax(0, 1fr) 52px;
+  min-height: 82px;
+  overflow: hidden;
+}
+
+.task-line {
+  align-items: center;
+}
+
+.task-side {
+  align-self: stretch;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.task-side.checked-side {
+  gap: 0;
+}
+
+.check-circle,
+.done-check {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+}
+
+.urgency-text {
+  min-height: auto;
+  line-height: 1.1;
+}
+
+.tag {
+  height: 24px;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.task-title {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.task-note {
+  font-size: 12px;
+  line-height: 1.45;
+}

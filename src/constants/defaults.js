@@ -1,7 +1,7 @@
 export const STORAGE_KEYS = {
-  tasks: "rollo:tasks:v017",
-  tags: "rollo:tags:v017",
-  settings: "rollo:settings:v017",
+  tasks: "rollo:tasks:v018",
+  tags: "rollo:tags:v018",
+  settings: "rollo:settings:v018",
 };
 
 export const DEFAULT_TAGS = [

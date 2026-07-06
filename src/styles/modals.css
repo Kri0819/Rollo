@@ -284,3 +284,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     font-size: 11.5px;
   }
 }
+
+
+/* v0.1.8 date/time field stability */
+.form-grid.half {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+input[type="date"],
+input[type="time"] {
+  height: 44px;
+  line-height: 1;
+  overflow: hidden;
+}

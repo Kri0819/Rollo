@@ -81,10 +81,12 @@ export default function TodoCard({
           <p className="task-note">{task.note || " "}</p>
         </div>
 
-        <div className="task-side">
-          <div className={`urgency-text urgency-${urgency.level}`}>
-            {checked ? "" : urgency.text}
-          </div>
+        <div className={`task-side ${checked ? "checked-side" : ""}`}>
+          {!checked && urgency.text ? (
+            <div className={`urgency-text urgency-${urgency.level}`}>
+              {urgency.text}
+            </div>
+          ) : null}
 
           <div className={`check-circle ${checked ? "checked" : ""}`}>
             {checked ? <Check size={15} strokeWidth={3} /> : null}
