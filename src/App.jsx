@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./styles.css";
 
-import { DEFAULT_TAGS, LEGACY_STORAGE_KEYS, STORAGE_KEYS } from "./constants/defaults";
+import { DEFAULT_TAGS, LEGACY_STORAGE_KEYS, MAX_TAGS, STORAGE_KEYS } from "./constants/defaults";
 import { todayKey, dateKey } from "./utils/date";
 import { downloadJSON, exportRolloData, loadWithLegacy, save } from "./utils/storage";
 
