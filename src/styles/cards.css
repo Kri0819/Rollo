@@ -173,10 +173,13 @@
   justify-content: center;
 }
 
+/* v0.1.21 - softer "done" badge: pale sage instead of a solid saturated green,
+   so it doesn't clash with the muted gray of the completed text */
 .check-circle.checked,
 .done-check {
-  border-color: var(--green);
-  background: var(--green);
+  border-color: transparent;
+  background: var(--tag-sage-bg);
+  color: var(--tag-sage-fg);
 }
 
 .done-card {

@@ -1,9 +1,14 @@
 import DoneCard from "./DoneCard";
 import EmptyState from "./EmptyState";
 
-export default function DonePage({ tasks, tagMap, onOpen, onRestore, onDelete }) {
+export default function DonePage({ tasks, tagMap, hasFilter, onOpen, onRestore, onDelete }) {
   if (!tasks.length) {
-    return (
+    return hasFilter ? (
+      <EmptyState
+        title="這個標籤還沒有完成的事項"
+        subtitle="換個標籤看看，或先去待辦頁打勾吧"
+      />
+    ) : (
       <EmptyState
         title="還沒有完成的事項"
         subtitle="今天打勾的事情，明天會滾到這裡"

@@ -208,7 +208,7 @@ export default function SettingsSheet({
             <div className="about-ball" />
             <h3>Rollo｜滾滾</h3>
             <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.20</p>
+            <p className="about-version">v0.1.21</p>
           </div>
         </div>
       )}

@@ -146,6 +146,7 @@ button, input, select, textarea { min-width: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .fab,
+  .brand-ball,
   .check-circle.checked,
   .done-check {
     animation: none !important;

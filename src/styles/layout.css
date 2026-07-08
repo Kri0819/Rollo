@@ -25,6 +25,21 @@
     #d86d3d 100%
   );
   position: relative;
+  animation: ball-wobble 3.6s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+@keyframes ball-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
 }
 
 .brand-ball::before {
@@ -54,9 +69,13 @@
 
 .brand-name {
   margin: 0;
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 900;
   line-height: 1;
+  background: linear-gradient(135deg, var(--orange), #d86d3d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* top page switch */
@@ -272,6 +291,61 @@
     opacity 0.85s ease,
     width 1.05s cubic-bezier(0.19, 1, 0.22, 1),
     transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
+
+
+/* v0.1.21 - tag filter bar */
+.tag-filter {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 0 14px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tag-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.tag-filter-chip {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tag-filter-chip.active {
+  border-color: transparent;
+  background: var(--card-soft);
+  color: var(--orange);
+  box-shadow: 0 2px 8px rgba(76, 62, 38, 0.08);
+}
+
+.tag-filter-chip.tag-blue.active {
+  background: var(--tag-blue-bg);
+  color: var(--tag-blue-fg);
+}
+
+.tag-filter-chip.tag-sage.active {
+  background: var(--tag-sage-bg);
+  color: var(--tag-sage-fg);
+}
+
+.tag-filter-chip.tag-gold.active {
+  background: var(--tag-gold-bg);
+  color: var(--tag-gold-fg);
+}
+
+.tag-filter-chip.tag-coral.active {
+  background: var(--tag-coral-bg);
+  color: var(--tag-coral-fg);
 }
 
 

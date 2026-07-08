@@ -7,6 +7,7 @@ import { downloadJSON, exportRolloData, loadWithLegacy, save } from "./utils/sto
 
 import Header from "./components/Header";
 import TopSwitch from "./components/TopSwitch";
+import TagFilter from "./components/TagFilter";
 import TodoPage from "./components/TodoPage";
 import DonePage from "./components/DonePage";
 import TaskModal from "./components/TaskModal";
@@ -54,11 +55,18 @@ export default function App() {
   });
 
   const [tab, setTab] = useState("todo");
+  const [filterTagId, setFilterTagId] = useState(null);
   const [taskModal, setTaskModal] = useState(null);
   const [detailTask, setDetailTask] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (filterTagId && !tags.some((tag) => tag.id === filterTagId)) {
+      setFilterTagId(null);
+    }
+  }, [tags, filterTagId]);
 
   useEffect(() => {
     save(STORAGE_KEYS.tasks, tasks);
@@ -79,6 +87,7 @@ export default function App() {
   const todoTasks = useMemo(() => {
     return tasks
       .filter((task) => !task.isCompleted)
+      .filter((task) => !filterTagId || task.tagId === filterTagId)
       .sort((a, b) => {
         const aChecked = isCheckedToday(a) ? 1 : 0;
         const bChecked = isCheckedToday(b) ? 1 : 0;
@@ -88,13 +97,14 @@ export default function App() {
         const order = { red: 0, orange: 1, yellow: 2, green: 3 };
         return order[getUrgencyLevel(a)] - order[getUrgencyLevel(b)];
       });
-  }, [tasks]);
+  }, [tasks, filterTagId]);
 
   const doneTasks = useMemo(() => {
     return tasks
       .filter((task) => task.isCompleted)
+      .filter((task) => !filterTagId || task.tagId === filterTagId)
       .sort((a, b) => (b.completedAt || "").localeCompare(a.completedAt || ""));
-  }, [tasks]);
+  }, [tasks, filterTagId]);
 
   function getUrgencyLevel(task) {
     if (!task.dueDate) return "green";
@@ -249,12 +259,14 @@ export default function App() {
     <div className={`app theme-${theme}`}>
       <Header onOpenSettings={() => setSettingsOpen(true)} />
       <TopSwitch activeTab={tab} onChangeTab={setTab} />
+      <TagFilter tags={tags} activeId={filterTagId} onChange={setFilterTagId} />
 
       <main className="content">
         {tab === "todo" ? (
           <TodoPage
             tasks={todoTasks}
             tagMap={tagMap}
+            hasFilter={!!filterTagId}
             onCheck={checkTask}
             onUncheck={uncheckTask}
             onEdit={(task) => setTaskModal({ mode: "edit", task })}
@@ -264,6 +276,7 @@ export default function App() {
           <DonePage
             tasks={doneTasks}
             tagMap={tagMap}
+            hasFilter={!!filterTagId}
             onOpen={setDetailTask}
             onRestore={restoreTask}
             onDelete={deleteTask}
