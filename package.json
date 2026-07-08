@@ -2,7 +2,7 @@
   "name": "rollo",
   "version": "0.1.0",
   "private": true,
-  "description": "滾滾 Rollo｜會自己滾到明天的待辦清單",
+  "description": "Rollo｜滾滾｜會自己滾到明天的待辦清單",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -5,10 +5,7 @@ export default function Header({ onOpenSettings }) {
     <header className="topbar">
       <div className="brand">
         <span className="brand-ball" />
-        <div>
-          <h1>滾滾</h1>
-          <p>Rollo</p>
-        </div>
+        <h1 className="brand-name">滾滾</h1>
       </div>
 
       <button className="icon-btn" onClick={onOpenSettings} aria-label="設定">

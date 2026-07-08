@@ -1,4 +1,5 @@
 import { Check, RotateCcw, Trash2 } from "lucide-react";
+import { tagColorKey } from "../utils/tagColor";
 import SwipeCard from "./SwipeCard";
 
 export default function DoneCard({ task, tag, onOpen, onRestore, onDelete }) {
@@ -20,7 +21,9 @@ export default function DoneCard({ task, tag, onOpen, onRestore, onDelete }) {
         <div className="task-main">
           <div className="task-line">
             <h2 className="task-title done-title">{task.title}</h2>
-            {tag ? <span className="tag">{tag.name}</span> : null}
+            {tag ? (
+              <span className={`tag tag-${tagColorKey(tag.id)}`}>{tag.name}</span>
+            ) : null}
           </div>
         </div>
 

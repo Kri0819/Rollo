@@ -40,17 +40,23 @@
   opacity: 0.7;
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1;
+.brand-ball::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  width: 6px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  transform: rotate(-25deg);
 }
 
-.brand p {
-  margin: 2px 0 0;
-  font-size: 11px;
-  color: var(--muted);
+.brand-name {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 /* top page switch */
@@ -266,4 +272,27 @@
     opacity 0.85s ease,
     width 1.05s cubic-bezier(0.19, 1, 0.22, 1),
     transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
+
+
+/* v0.1.20 - center the tab icon inside the circle
+   (the 6px flex gap was still reserved next to the collapsed,
+   zero-width label, nudging the icon off-center) */
+.switch-content {
+  gap: 0;
+}
+
+/* v0.1.20 - cuter pass: a gentle idle bob on the add button */
+.fab {
+  animation: fab-bob 3.2s ease-in-out infinite;
+}
+
+@keyframes fab-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }

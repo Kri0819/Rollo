@@ -1,5 +1,6 @@
 import { Check, Pencil, Trash2 } from "lucide-react";
 import { getUrgency, isCheckedToday } from "../utils/date";
+import { tagColorKey } from "../utils/tagColor";
 import SwipeCard from "./SwipeCard";
 
 export default function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
@@ -31,14 +32,16 @@ export default function TodoCard({ task, tag, onCheck, onEdit, onDelete }) {
         <div className="task-main">
           <div className="task-line">
             <h2
-              className={`task-title urgency-${urgency.level} ${
-                checked ? "checked-title" : ""
+              className={`task-title ${
+                checked ? "checked-title" : `urgency-${urgency.level}`
               }`}
             >
               {task.title}
             </h2>
 
-            {tag ? <span className="tag">{tag.name}</span> : null}
+            {tag ? (
+              <span className={`tag tag-${tagColorKey(tag.id)}`}>{tag.name}</span>
+            ) : null}
           </div>
 
           <p className="task-note">{task.note || " "}</p>

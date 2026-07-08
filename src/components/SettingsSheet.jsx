@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Moon, Pencil, Sun, Trash2, X } from "lucide-react";
 import { MAX_TAGS } from "../constants/defaults";
+import { tagColorKey } from "../utils/tagColor";
 import { BottomSheet } from "./Modal";
 
 export default function SettingsSheet({
@@ -66,7 +67,7 @@ export default function SettingsSheet({
 
             <div className="settings-account-card">
               <div className="settings-avatar">R</div>
-              <div className="settings-account-name">Rollo 本機版</div>
+              <div className="settings-account-name">滾滾 本機版</div>
               <div className="settings-account-sub">本機帳號</div>
             </div>
           </section>
@@ -154,7 +155,10 @@ export default function SettingsSheet({
                     }}
                   />
                 ) : (
-                  <span className="tag-name-display">{tag.name}</span>
+                  <span className="tag-name-display">
+                    <span className={`tag-dot tag-dot-${tagColorKey(tag.id)}`} />
+                    {tag.name}
+                  </span>
                 )}
 
                 <div className="tag-manage-actions">
@@ -202,9 +206,9 @@ export default function SettingsSheet({
 
           <div className="about-card">
             <div className="about-ball" />
-            <h3>滾滾 Rollo</h3>
+            <h3>Rollo｜滾滾</h3>
             <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.14</p>
+            <p className="about-version">v0.1.20</p>
           </div>
         </div>
       )}

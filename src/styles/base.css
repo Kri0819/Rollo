@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap");
+
 * {
   box-sizing: border-box;
 }
@@ -50,6 +52,15 @@ button {
   --yellow: #c99a20;
   --green: #6f9d68;
   --blue: #5f83b2;
+
+  --tag-blue-bg: #e7eef6;
+  --tag-blue-fg: #4e6e96;
+  --tag-sage-bg: #e8f1e5;
+  --tag-sage-fg: #4c7748;
+  --tag-gold-bg: #fbeed2;
+  --tag-gold-fg: #97701c;
+  --tag-coral-bg: #fbe6e0;
+  --tag-coral-fg: #b05339;
 }
 
 .theme-dark {
@@ -66,6 +77,15 @@ button {
   --yellow: #e3b94d;
   --green: #8ab980;
   --blue: #92b4df;
+
+  --tag-blue-bg: #2d3a48;
+  --tag-blue-fg: #9cc0e8;
+  --tag-sage-bg: #2a3a28;
+  --tag-sage-fg: #a7d6a0;
+  --tag-gold-bg: #3d3115;
+  --tag-gold-fg: #f0c878;
+  --tag-coral-bg: #3d2721;
+  --tag-coral-fg: #efa391;
 }
 
 .app {
@@ -110,3 +130,24 @@ button {
 }
 
 button, input, select, textarea { min-width: 0; }
+
+
+/* v0.1.20 - cuter pass: rounded display font for headings/wordmark */
+.brand-name,
+.task-title,
+.settings-head h2,
+.modal-head h2,
+.confirm-title,
+.about-card h3,
+.empty h2 {
+  font-family: "Nunito", Inter, -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab,
+  .check-circle.checked,
+  .done-check {
+    animation: none !important;
+  }
+}

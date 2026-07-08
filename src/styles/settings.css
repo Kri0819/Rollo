@@ -400,3 +400,47 @@
 .about-card p {
   font-size: 13.5px;
 }
+
+
+/* v0.1.20 - cuter pass: colored tag dots + slightly rounder rows */
+.tag-name-display {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-right: 8px;
+  flex: 0 0 auto;
+}
+
+.tag-dot-blue {
+  background: var(--tag-blue-fg);
+}
+
+.tag-dot-sage {
+  background: var(--tag-sage-fg);
+}
+
+.tag-dot-gold {
+  background: var(--tag-gold-fg);
+}
+
+.tag-dot-coral {
+  background: var(--tag-coral-fg);
+}
+
+.settings-account-card,
+.settings-appearance-card,
+.settings-list-row,
+.settings-logout-row,
+.tag-manage-row {
+  border-radius: 18px;
+}
+
+.about-card {
+  border-radius: 22px;
+}
