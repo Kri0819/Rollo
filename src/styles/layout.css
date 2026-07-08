@@ -14,16 +14,7 @@
 }
 
 .brand-ball {
-  width: 22px;
-  height: 22px;
   display: block;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle at 35% 30%,
-    #f6c070 0 20%,
-    var(--orange) 45%,
-    #d86d3d 100%
-  );
   position: relative;
   animation: ball-wobble 3.6s ease-in-out infinite;
   transform-origin: 50% 85%;
@@ -45,26 +36,14 @@
 .brand-ball::before {
   content: "";
   position: absolute;
-  left: -16px;
-  top: 12px;
-  width: 22px;
-  height: 7px;
-  border-bottom: 2px solid #ec9b7b;
+  left: -14px;
+  top: 19px;
+  width: 20px;
+  height: 6px;
+  border-bottom: 2px dashed #ec9b7b;
   border-radius: 999px;
-  transform: rotate(-8deg);
-  opacity: 0.7;
-}
-
-.brand-ball::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 4px;
-  width: 6px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.65);
-  transform: rotate(-25deg);
+  transform: rotate(-6deg);
+  opacity: 0.6;
 }
 
 .brand-name {
@@ -223,26 +202,17 @@
   color: var(--muted);
 }
 
-.empty-ball {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle at 35% 30%,
-    #f7c477 0 22%,
-    var(--orange) 52%,
-    #d86d3d 100%
-  );
-  margin-bottom: 18px;
+.empty-ball-wrap {
+  margin-bottom: 14px;
   position: relative;
 }
 
-.empty-ball::before {
+.empty-ball-wrap::before {
   content: "";
   position: absolute;
-  right: 36px;
-  top: 18px;
-  width: 70px;
+  right: 68px;
+  top: 36px;
+  width: 74px;
   border-top: 2px dotted var(--line);
 }
 

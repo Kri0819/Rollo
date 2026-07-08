@@ -1,10 +1,11 @@
 import { Settings } from "lucide-react";
+import Rollo from "./Rollo";
 
 export default function Header({ onOpenSettings }) {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="brand-ball" />
+        <Rollo size={32} mood="happy" showShadow={false} className="brand-ball" />
         <h1 className="brand-name">滾滾</h1>
       </div>
 

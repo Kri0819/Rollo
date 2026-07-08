@@ -3,6 +3,7 @@ import { Moon, Pencil, Sun, Trash2, X } from "lucide-react";
 import { MAX_TAGS } from "../constants/defaults";
 import { tagColorKey } from "../utils/tagColor";
 import { BottomSheet } from "./Modal";
+import Rollo from "./Rollo";
 
 export default function SettingsSheet({
   theme,
@@ -205,10 +206,10 @@ export default function SettingsSheet({
           </button>
 
           <div className="about-card">
-            <div className="about-ball" />
+            <Rollo size={56} mood="happy" showShadow={false} className="about-ball" />
             <h3>Rollo｜滾滾</h3>
             <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.21</p>
+            <p className="about-version">v0.1.22</p>
           </div>
         </div>
       )}
