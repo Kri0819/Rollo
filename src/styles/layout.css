@@ -170,11 +170,11 @@
 }
 
 .fab {
-  position: fixed;
-  right: max(20px, calc(50vw - 220px));
+  position: absolute;
+  right: 20px;
   bottom: 18px;
-  width: 68px;
-  height: 68px;
+  width: 58px;
+  height: 58px;
   border: 0;
   border-radius: 999px;
   background: linear-gradient(145deg, #e89a3f, #df6f43);
@@ -183,7 +183,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 32px;
   line-height: 1;
   z-index: 20;
 }
@@ -228,16 +228,16 @@
 }
 
 
-/* v0.1.19 - restore v0.1.16 smooth flowing tab motion */
+/* v0.1.23 - tab motion was way too slow, sped it back up */
 .top-switch-item {
   transition:
-    flex 1.25s cubic-bezier(0.19, 1, 0.22, 1),
-    flex-basis 1.25s cubic-bezier(0.19, 1, 0.22, 1),
-    width 1.25s cubic-bezier(0.19, 1, 0.22, 1),
-    background-color 0.85s ease,
-    color 0.85s ease,
-    box-shadow 0.85s ease,
-    border-color 0.85s ease !important;
+    flex 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    flex-basis 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    background-color 0.28s ease,
+    color 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease !important;
 }
 
 .top-switch-item.active {
@@ -250,17 +250,17 @@
 
 .switch-label {
   transition:
-    max-width 1.15s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 0.85s ease,
-    transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    max-width 0.36s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.26s ease,
+    transform 0.32s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
 
 .top-switch-item.active .switch-icon,
 .top-switch-item.compact .switch-icon {
   transition:
-    opacity 0.85s ease,
-    width 1.05s cubic-bezier(0.19, 1, 0.22, 1),
-    transform 1.05s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    opacity 0.26s ease,
+    width 0.32s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 0.32s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
 
 
@@ -316,6 +316,11 @@
 .tag-filter-chip.tag-coral.active {
   background: var(--tag-coral-bg);
   color: var(--tag-coral-fg);
+}
+
+.tag-filter.locked .tag-filter-chip {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 

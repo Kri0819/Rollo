@@ -1,5 +1,5 @@
 .sheet-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 50;
   background: rgba(26, 20, 10, 0.46);
@@ -95,12 +95,19 @@
   width: 34px;
   height: 34px;
   border-radius: 999px;
-  background: var(--text);
+  background: var(--card-soft);
   color: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
+}
+
+.settings-avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
 }
 
 .settings-account-name {
@@ -435,4 +442,112 @@
 
 .about-card {
   border-radius: 22px;
+}
+
+
+/* v0.1.23 - login sheet */
+.login-body {
+  padding-bottom: 6px;
+}
+
+.login-intro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+}
+
+.login-sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.google-btn-slot {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+  margin-bottom: 14px;
+}
+
+.login-error {
+  font-size: 12.5px;
+  color: var(--red);
+  text-align: center;
+  margin: 0 0 14px;
+}
+
+.login-disclaimer {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* v0.1.23 - settings footer: app name / version / legal buttons */
+.settings-footer {
+  text-align: center;
+  padding: 6px 0 4px;
+}
+
+.settings-footer-name {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.settings-footer-version {
+  margin: 3px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.settings-footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.settings-footer-links button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.settings-footer-links button:hover {
+  color: var(--orange);
+}
+
+.settings-footer-dot {
+  color: var(--line);
+  font-size: 12px;
+}
+
+.legal-card {
+  text-align: left;
+}
+
+.legal-card p {
+  margin: 0 0 10px;
+}
+
+.legal-card p:last-child {
+  margin-bottom: 0;
+}
+
+a.settings-list-row {
+  text-decoration: none;
+  margin-top: 10px;
 }

@@ -5,7 +5,7 @@ export default function Header({ onOpenSettings }) {
   return (
     <header className="topbar">
       <div className="brand">
-        <Rollo size={32} mood="happy" showShadow={false} className="brand-ball" />
+        <Rollo size={36} mood="happy" showShadow={false} className="brand-ball" />
         <h1 className="brand-name">滾滾</h1>
       </div>
 

@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   tasks: "rollo:tasks",
   tags: "rollo:tags",
   settings: "rollo:settings",
+  account: "rollo:account",
 };
 
 export const LEGACY_STORAGE_KEYS = {
@@ -42,3 +43,10 @@ export const DEFAULT_TAGS = [
 ];
 
 export const MAX_TAGS = 5;
+
+// Set in .env as VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+// Bump this on every release - it's the single source of truth,
+// shown in Settings › 關於 and the Settings footer.
+export const APP_VERSION = "0.1.24";

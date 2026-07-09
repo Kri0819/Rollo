@@ -1,5 +1,5 @@
 .modal-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 50;
   background: rgba(26, 20, 10, 0.46);
@@ -79,6 +79,17 @@ textarea {
   color: var(--text);
   padding: 10px 8px;
   outline: none;
+}
+
+select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.field-hint {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--orange);
 }
 
 textarea {

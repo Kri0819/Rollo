@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { CenterModal } from "./Modal";
 
-export default function TaskModal({ mode, task, tags, onClose, onSave, onDelete }) {
+export default function TaskModal({ mode, task, tags, tagsLocked, onClose, onSave, onDelete }) {
   const [title, setTitle] = useState(task?.title || "");
   const [tagId, setTagId] = useState(task?.tagId || "");
   const [dueDate, setDueDate] = useState(task?.dueDate || "");
@@ -43,8 +43,12 @@ export default function TaskModal({ mode, task, tags, onClose, onSave, onDelete 
         </label>
 
         <label>
-          <span>標籤</span>
-          <select value={tagId} onChange={(e) => setTagId(e.target.value)}>
+          <span>標籤{tagsLocked && <em className="field-hint"> · 登入後可用</em>}</span>
+          <select
+            value={tagId}
+            onChange={(e) => setTagId(e.target.value)}
+            disabled={tagsLocked}
+          >
             <option value="">--</option>
             {tags.map((tag) => (
               <option key={tag.id} value={tag.id}>

@@ -3,7 +3,7 @@ import "./styles.css";
 
 import { DEFAULT_TAGS, LEGACY_STORAGE_KEYS, MAX_TAGS, STORAGE_KEYS } from "./constants/defaults";
 import { todayKey, dateKey } from "./utils/date";
-import { downloadJSON, exportRolloData, loadWithLegacy, save } from "./utils/storage";
+import { downloadCSV, downloadJSON, exportRolloData, load, loadWithLegacy, save, tasksToCSV } from "./utils/storage";
 
 import Header from "./components/Header";
 import TopSwitch from "./components/TopSwitch";
@@ -13,6 +13,7 @@ import DonePage from "./components/DonePage";
 import TaskModal from "./components/TaskModal";
 import DoneDetailModal from "./components/DoneDetailModal";
 import SettingsSheet from "./components/SettingsSheet";
+import LoginSheet from "./components/LoginSheet";
 import ConfirmDialog from "./components/ConfirmDialog";
 
 function uid() {
@@ -54,11 +55,14 @@ export default function App() {
     return loadWithLegacy(STORAGE_KEYS.settings, LEGACY_STORAGE_KEYS.settings, { theme: "light" }).theme || "light";
   });
 
+  const [account, setAccount] = useState(() => load(STORAGE_KEYS.account, null));
+
   const [tab, setTab] = useState("todo");
   const [filterTagId, setFilterTagId] = useState(null);
   const [taskModal, setTaskModal] = useState(null);
   const [detailTask, setDetailTask] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState("");
 
@@ -67,6 +71,10 @@ export default function App() {
       setFilterTagId(null);
     }
   }, [tags, filterTagId]);
+
+  useEffect(() => {
+    save(STORAGE_KEYS.account, account);
+  }, [account]);
 
   useEffect(() => {
     save(STORAGE_KEYS.tasks, tasks);
@@ -246,20 +254,55 @@ export default function App() {
 
     downloadJSON(`rollo-backup-${todayKey()}.json`, data);
 
-    setToast("已匯出本機備份");
+    setToast("已匯出 JSON 備份");
     setTimeout(() => setToast(""), 1800);
   }
 
-  function logoutPlaceholder() {
-    setToast("目前是本機版本，尚未啟用登入");
+  function exportCSVData() {
+    const csv = tasksToCSV(tasks, tagMap);
+    downloadCSV(`rollo-tasks-${todayKey()}.csv`, csv);
+
+    setToast("已匯出 CSV");
+    setTimeout(() => setToast(""), 1800);
+  }
+
+  function openSettings() {
+    if (account) {
+      setSettingsOpen(true);
+    } else {
+      setAuthOpen(true);
+    }
+  }
+
+  function handleLoginSuccess(profile) {
+    setAccount(profile);
+    setAuthOpen(false);
+    setSettingsOpen(true);
+  }
+
+  function handleLogout() {
+    setAccount(null);
+    setSettingsOpen(false);
+    setToast("已登出");
+    setTimeout(() => setToast(""), 1800);
+  }
+
+  function tagsLockedNotice() {
+    setToast("登入後才能使用標籤");
     setTimeout(() => setToast(""), 1800);
   }
 
   return (
     <div className={`app theme-${theme}`}>
-      <Header onOpenSettings={() => setSettingsOpen(true)} />
+      <Header onOpenSettings={openSettings} />
       <TopSwitch activeTab={tab} onChangeTab={setTab} />
-      <TagFilter tags={tags} activeId={filterTagId} onChange={setFilterTagId} />
+      <TagFilter
+        tags={tags}
+        activeId={filterTagId}
+        onChange={setFilterTagId}
+        locked={!account}
+        onLocked={tagsLockedNotice}
+      />
 
       <main className="content">
         {tab === "todo" ? (
@@ -299,6 +342,7 @@ export default function App() {
           mode={taskModal.mode}
           task={taskModal.task}
           tags={tags}
+          tagsLocked={!account}
           onClose={() => setTaskModal(null)}
           onSave={upsertTask}
           onDelete={taskModal.task ? () => deleteTask(taskModal.task) : null}
@@ -317,15 +361,24 @@ export default function App() {
         />
       )}
 
+      {authOpen && (
+        <LoginSheet
+          onClose={() => setAuthOpen(false)}
+          onSuccess={handleLoginSuccess}
+        />
+      )}
+
       {settingsOpen && (
         <SettingsSheet
+          account={account}
           theme={theme}
           setTheme={setTheme}
           tags={tags}
           setTags={setTags}
           onAddTag={addTag}
-          onLogout={logoutPlaceholder}
-          onExportData={exportLocalData}
+          onLogout={handleLogout}
+          onExportJSON={exportLocalData}
+          onExportCSV={exportCSVData}
           onClose={() => setSettingsOpen(false)}
         />
       )}

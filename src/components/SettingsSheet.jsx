@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Moon, Pencil, Sun, Trash2, X } from "lucide-react";
-import { MAX_TAGS } from "../constants/defaults";
+import { APP_VERSION, MAX_TAGS } from "../constants/defaults";
 import { tagColorKey } from "../utils/tagColor";
 import { BottomSheet } from "./Modal";
 import Rollo from "./Rollo";
 
 export default function SettingsSheet({
+  account,
   theme,
   setTheme,
   tags,
   setTags,
   onAddTag,
   onLogout,
-  onExportData,
+  onExportJSON,
+  onExportCSV,
   onClose,
 }) {
   const [screen, setScreen] = useState("main");
@@ -49,13 +51,20 @@ export default function SettingsSheet({
     if (ok) setNewTag("");
   }
 
-  const title =
-    screen === "main" ? "設定" : screen === "tags" ? "編輯標籤" : "關於";
+  const titles = {
+    main: "設定",
+    tags: "編輯標籤",
+    export: "匯出資料",
+    about: "關於",
+    terms: "使用條款",
+    privacy: "隱私權政策",
+    contact: "聯絡作者",
+  };
 
   return (
     <BottomSheet onClose={onClose}>
       <div className="settings-head">
-        <h2>{title}</h2>
+        <h2>{titles[screen]}</h2>
         <button className="settings-close" onClick={onClose} aria-label="關閉">
           <X size={22} />
         </button>
@@ -67,14 +76,20 @@ export default function SettingsSheet({
             <p className="settings-section-title">帳號</p>
 
             <div className="settings-account-card">
-              <div className="settings-avatar">R</div>
-              <div className="settings-account-name">滾滾 本機版</div>
-              <div className="settings-account-sub">本機帳號</div>
+              {account?.picture ? (
+                <img className="settings-avatar-img" src={account.picture} alt="" />
+              ) : (
+                <div className="settings-avatar">
+                  <Rollo size={22} mood="happy" showShadow={false} />
+                </div>
+              )}
+              <div className="settings-account-name">{account?.name || "滾滾"}</div>
+              <div className="settings-account-sub">雲端帳號</div>
             </div>
           </section>
 
           <section className="settings-section">
-            <p className="settings-section-title">外觀</p>
+            <p className="settings-section-title">顯示</p>
 
             <div className="settings-appearance-card">
               <span>外觀</span>
@@ -100,12 +115,20 @@ export default function SettingsSheet({
           </section>
 
           <section className="settings-section">
-            <p className="settings-section-title">標籤</p>
+            <p className="settings-section-title">資料管理</p>
 
             <button className="settings-list-row" onClick={() => setScreen("tags")}>
               <span>編輯標籤</span>
               <span className="settings-row-right">
                 {tags.length} 個
+                <span className="settings-chevron">›</span>
+              </span>
+            </button>
+
+            <button className="settings-list-row" onClick={() => setScreen("export")}>
+              <span>匯出資料</span>
+              <span className="settings-row-right">
+                JSON / CSV
                 <span className="settings-chevron">›</span>
               </span>
             </button>
@@ -118,16 +141,25 @@ export default function SettingsSheet({
               <span>關於</span>
               <span className="settings-chevron">›</span>
             </button>
+          </section>
 
-            <button className="settings-list-row" onClick={onExportData}>
-              <span>匯出本機備份</span>
-              <span className="settings-chevron">›</span>
-            </button>
-
+          <section className="settings-section">
             <button className="settings-logout-row" onClick={onLogout}>
               登出
             </button>
           </section>
+
+          <div className="settings-footer">
+            <p className="settings-footer-name">Rollo｜滾滾</p>
+            <p className="settings-footer-version">Version {APP_VERSION}</p>
+            <div className="settings-footer-links">
+              <button onClick={() => setScreen("terms")}>使用條款</button>
+              <span className="settings-footer-dot">·</span>
+              <button onClick={() => setScreen("privacy")}>隱私權政策</button>
+              <span className="settings-footer-dot">·</span>
+              <button onClick={() => setScreen("contact")}>聯絡作者</button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -199,6 +231,26 @@ export default function SettingsSheet({
         </div>
       )}
 
+      {screen === "export" && (
+        <div className="settings-body">
+          <button className="settings-back" onClick={() => setScreen("main")}>
+            ← 返回設定
+          </button>
+
+          <p className="settings-section-title">選擇匯出格式</p>
+
+          <button className="settings-list-row" onClick={onExportJSON}>
+            <span>匯出為 JSON</span>
+            <span className="settings-row-right">完整備份</span>
+          </button>
+
+          <button className="settings-list-row" onClick={onExportCSV}>
+            <span>匯出為 CSV</span>
+            <span className="settings-row-right">可用 Excel 開啟</span>
+          </button>
+        </div>
+      )}
+
       {screen === "about" && (
         <div className="settings-body">
           <button className="settings-back" onClick={() => setScreen("main")}>
@@ -206,10 +258,42 @@ export default function SettingsSheet({
           </button>
 
           <div className="about-card">
-            <Rollo size={56} mood="happy" showShadow={false} className="about-ball" />
+            <Rollo size={64} mood="happy" showShadow={false} className="about-ball" />
             <h3>Rollo｜滾滾</h3>
             <p>會自己滾到明天的待辦清單。</p>
-            <p className="about-version">v0.1.22</p>
+            <p className="about-version">v{APP_VERSION}</p>
+          </div>
+        </div>
+      )}
+
+      {(screen === "terms" || screen === "privacy") && (
+        <div className="settings-body">
+          <button className="settings-back" onClick={() => setScreen("main")}>
+            ← 返回設定
+          </button>
+
+          <div className="about-card legal-card">
+            <p>
+              滾滾目前是一個資料只存在你這台裝置上的個人小工具，尚未提供正式的
+              {screen === "terms" ? "使用條款" : "隱私權政策"}內容。
+            </p>
+            <p>之後如果有正式版本，會更新在這裡。</p>
+          </div>
+        </div>
+      )}
+
+      {screen === "contact" && (
+        <div className="settings-body">
+          <button className="settings-back" onClick={() => setScreen("main")}>
+            ← 返回設定
+          </button>
+
+          <div className="about-card legal-card">
+            <p>有任何想法或問題，歡迎跟作者說一聲。</p>
+            <a className="settings-list-row" href="mailto:hello@example.com">
+              <span>寄信給作者</span>
+              <span className="settings-chevron">›</span>
+            </a>
           </div>
         </div>
       )}
