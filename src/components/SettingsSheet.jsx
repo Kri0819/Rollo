@@ -10,8 +10,9 @@ export default function SettingsSheet({
   theme,
   setTheme,
   tags,
-  setTags,
   onAddTag,
+  onRenameTag,
+  onDeleteTag,
   onLogout,
   onExportJSON,
   onExportCSV,
@@ -22,10 +23,6 @@ export default function SettingsSheet({
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
 
-  function removeTag(id) {
-    setTags((prev) => prev.filter((tag) => tag.id !== id));
-  }
-
   function startEdit(tag) {
     setEditingId(tag.id);
     setEditingName(tag.name);
@@ -35,19 +32,15 @@ export default function SettingsSheet({
     const clean = editingName.trim();
 
     if (editingId && clean) {
-      setTags((prev) =>
-        prev.map((tag) =>
-          tag.id === editingId ? { ...tag, name: clean } : tag
-        )
-      );
+      onRenameTag(editingId, clean);
     }
 
     setEditingId(null);
     setEditingName("");
   }
 
-  function handleAddTag() {
-    const ok = onAddTag(newTag);
+  async function handleAddTag() {
+    const ok = await onAddTag(newTag);
     if (ok) setNewTag("");
   }
 
@@ -201,7 +194,7 @@ export default function SettingsSheet({
 
                   <button
                     className="danger"
-                    onClick={() => removeTag(tag.id)}
+                    onClick={() => onDeleteTag(tag.id)}
                     aria-label="刪除標籤"
                   >
                     <Trash2 size={18} />

@@ -3,7 +3,19 @@ import "./styles.css";
 
 import { DEFAULT_TAGS, LEGACY_STORAGE_KEYS, MAX_TAGS, STORAGE_KEYS } from "./constants/defaults";
 import { todayKey, dateKey } from "./utils/date";
-import { downloadCSV, downloadJSON, exportRolloData, load, loadWithLegacy, save, tasksToCSV } from "./utils/storage";
+import { downloadCSV, downloadJSON, exportRolloData, loadWithLegacy, save, tasksToCSV } from "./utils/storage";
+import { supabase, supabaseReady } from "./utils/supabaseClient";
+import {
+  deleteCloudTag,
+  deleteCloudTask,
+  fetchCloudTags,
+  fetchCloudTasks,
+  insertCloudTag,
+  insertCloudTask,
+  migrateLocalDataToCloud,
+  renameCloudTag,
+  updateCloudTask,
+} from "./utils/cloudData";
 
 import Header from "./components/Header";
 import TopSwitch from "./components/TopSwitch";
@@ -15,6 +27,9 @@ import DoneDetailModal from "./components/DoneDetailModal";
 import SettingsSheet from "./components/SettingsSheet";
 import LoginSheet from "./components/LoginSheet";
 import ConfirmDialog from "./components/ConfirmDialog";
+import Rollo from "./components/Rollo";
+
+const POST_LOGIN_KEY = "rollo:post-login";
 
 function uid() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -41,6 +56,20 @@ function normalizeTasks(tasks) {
   });
 }
 
+function accountFromSession(session) {
+  if (!session?.user) return null;
+
+  const user = session.user;
+  const meta = user.user_metadata || {};
+
+  return {
+    id: user.id,
+    name: meta.full_name || meta.name || user.email || "",
+    email: user.email || "",
+    picture: meta.avatar_url || meta.picture || "",
+  };
+}
+
 export default function App() {
   const [tasks, setTasks] = useState(() =>
     normalizeTasks(loadWithLegacy(STORAGE_KEYS.tasks, LEGACY_STORAGE_KEYS.tasks, []))
@@ -55,7 +84,9 @@ export default function App() {
     return loadWithLegacy(STORAGE_KEYS.settings, LEGACY_STORAGE_KEYS.settings, { theme: "light" }).theme || "light";
   });
 
-  const [account, setAccount] = useState(() => load(STORAGE_KEYS.account, null));
+  const [account, setAccount] = useState(null);
+  const [authLoading, setAuthLoading] = useState(supabaseReady);
+  const [cloudLoading, setCloudLoading] = useState(false);
 
   const [tab, setTab] = useState("todo");
   const [filterTagId, setFilterTagId] = useState(null);
@@ -66,15 +97,78 @@ export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState("");
 
+  function showToast(message) {
+    setToast(message);
+    setTimeout(() => setToast(""), 1800);
+  }
+
+  // --- auth: keep `account` in sync with the Supabase session ---
+  useEffect(() => {
+    if (!supabaseReady) return;
+
+    supabase.auth.getSession().then(({ data }) => {
+      setAccount(accountFromSession(data.session));
+      setAuthLoading(false);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAccount((prev) => {
+        const next = accountFromSession(session);
+        if (prev && next && prev.id === next.id) return prev;
+        return next;
+      });
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // --- cloud sync: on login, load (and if needed migrate) this device's
+  // local data into the cloud; the cloud copy becomes the source of truth ---
+  useEffect(() => {
+    if (!account) return;
+
+    let cancelled = false;
+
+    (async () => {
+      setCloudLoading(true);
+
+      try {
+        let cloudTags = await fetchCloudTags();
+        let cloudTasks = await fetchCloudTasks();
+
+        if (cloudTags.length === 0 && cloudTasks.length === 0 && (tags.length || tasks.length)) {
+          await migrateLocalDataToCloud(tags, tasks);
+          cloudTags = await fetchCloudTags();
+          cloudTasks = await fetchCloudTasks();
+        }
+
+        if (!cancelled) {
+          setTags(cloudTags.length ? cloudTags : DEFAULT_TAGS);
+          setTasks(normalizeTasks(cloudTasks));
+        }
+      } catch (err) {
+        if (!cancelled) showToast("雲端資料讀取失敗，請檢查網路連線");
+      } finally {
+        if (!cancelled) setCloudLoading(false);
+      }
+
+      if (sessionStorage.getItem(POST_LOGIN_KEY)) {
+        sessionStorage.removeItem(POST_LOGIN_KEY);
+        setSettingsOpen(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.id]);
+
   useEffect(() => {
     if (filterTagId && !tags.some((tag) => tag.id === filterTagId)) {
       setFilterTagId(null);
     }
   }, [tags, filterTagId]);
-
-  useEffect(() => {
-    save(STORAGE_KEYS.account, account);
-  }, [account]);
 
   useEffect(() => {
     save(STORAGE_KEYS.tasks, tasks);
@@ -129,39 +223,48 @@ export default function App() {
     return "green";
   }
 
-  function upsertTask(data) {
+  async function upsertTask(data) {
     const now = new Date().toISOString();
 
     if (data.id) {
+      const patch = {
+        ...data,
+        dueTime: data.dueDate ? data.dueTime : "",
+        updatedAt: now,
+      };
+
       setTasks((prev) =>
-        prev.map((task) =>
-          task.id === data.id
-            ? {
-                ...task,
-                ...data,
-                dueTime: data.dueDate ? data.dueTime : "",
-                updatedAt: now,
-              }
-            : task
-        )
+        prev.map((task) => (task.id === data.id ? { ...task, ...patch } : task))
       );
+
+      if (account) {
+        updateCloudTask(data.id, patch).catch(() => showToast("雲端同步失敗"));
+      }
     } else {
-      setTasks((prev) => [
-        ...prev,
-        {
-          id: uid(),
-          title: data.title,
-          tagId: data.tagId || "",
-          dueDate: data.dueDate || "",
-          dueTime: data.dueDate ? data.dueTime || "" : "",
-          note: data.note || "",
-          checkedAt: null,
-          completedAt: null,
-          isCompleted: false,
-          createdAt: now,
-          updatedAt: now,
-        },
-      ]);
+      const localTask = {
+        id: uid(),
+        title: data.title,
+        tagId: data.tagId || "",
+        dueDate: data.dueDate || "",
+        dueTime: data.dueDate ? data.dueTime || "" : "",
+        note: data.note || "",
+        checkedAt: null,
+        completedAt: null,
+        isCompleted: false,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      if (account) {
+        try {
+          const created = await insertCloudTask(localTask);
+          setTasks((prev) => [...prev, created]);
+        } catch {
+          showToast("新增失敗，請檢查網路連線");
+        }
+      } else {
+        setTasks((prev) => [...prev, localTask]);
+      }
     }
 
     setTaskModal(null);
@@ -170,54 +273,43 @@ export default function App() {
   function checkTask(task) {
     const now = new Date().toISOString();
     const checked = isCheckedToday(task);
+    const patch = { checkedAt: checked ? null : now, updatedAt: now };
 
     setTasks((prev) =>
-      prev.map((item) =>
-        item.id === task.id
-          ? {
-              ...item,
-              checkedAt: checked ? null : now,
-              updatedAt: now,
-            }
-          : item
-      )
+      prev.map((item) => (item.id === task.id ? { ...item, ...patch } : item))
     );
+
+    if (account) {
+      updateCloudTask(task.id, patch).catch(() => showToast("雲端同步失敗"));
+    }
   }
 
   function uncheckTask(task) {
     const now = new Date().toISOString();
+    const patch = { checkedAt: null, updatedAt: now };
 
     setTasks((prev) =>
-      prev.map((item) =>
-        item.id === task.id
-          ? {
-              ...item,
-              checkedAt: null,
-              updatedAt: now,
-            }
-          : item
-      )
+      prev.map((item) => (item.id === task.id ? { ...item, ...patch } : item))
     );
+
+    if (account) {
+      updateCloudTask(task.id, patch).catch(() => showToast("雲端同步失敗"));
+    }
   }
 
   function restoreTask(task) {
     const now = new Date().toISOString();
+    const patch = { isCompleted: false, checkedAt: null, completedAt: null, updatedAt: now };
 
     setTasks((prev) =>
-      prev.map((item) =>
-        item.id === task.id
-          ? {
-              ...item,
-              isCompleted: false,
-              checkedAt: null,
-              completedAt: null,
-              updatedAt: now,
-            }
-          : item
-      )
+      prev.map((item) => (item.id === task.id ? { ...item, ...patch } : item))
     );
 
     setDetailTask(null);
+
+    if (account) {
+      updateCloudTask(task.id, patch).catch(() => showToast("雲端同步失敗"));
+    }
   }
 
   function deleteTask(task) {
@@ -230,20 +322,50 @@ export default function App() {
         setTasks((prev) => prev.filter((item) => item.id !== task.id));
         setDetailTask(null);
         setConfirm(null);
+
+        if (account) {
+          deleteCloudTask(task.id).catch(() => showToast("刪除失敗，請檢查網路連線"));
+        }
       },
     });
   }
 
-  function addTag(name) {
+  async function addTag(name) {
     const clean = name.trim();
     if (!clean) return false;
     if (tags.length >= MAX_TAGS) return false;
     if (tags.some((tag) => tag.name === clean)) return false;
 
+    if (account) {
+      try {
+        const created = await insertCloudTag(clean);
+        setTags((prev) => [...prev, created]);
+        return true;
+      } catch {
+        showToast("新增標籤失敗");
+        return false;
+      }
+    }
+
     setTags((prev) => [...prev, { id: uid(), name: clean }]);
     return true;
   }
 
+  function renameTag(id, name) {
+    setTags((prev) => prev.map((tag) => (tag.id === id ? { ...tag, name } : tag)));
+
+    if (account) {
+      renameCloudTag(id, name).catch(() => showToast("標籤更新失敗"));
+    }
+  }
+
+  function deleteTagHandler(id) {
+    setTags((prev) => prev.filter((tag) => tag.id !== id));
+
+    if (account) {
+      deleteCloudTag(id).catch(() => showToast("標籤刪除失敗"));
+    }
+  }
 
   function exportLocalData() {
     const data = exportRolloData({
@@ -253,17 +375,13 @@ export default function App() {
     });
 
     downloadJSON(`rollo-backup-${todayKey()}.json`, data);
-
-    setToast("已匯出 JSON 備份");
-    setTimeout(() => setToast(""), 1800);
+    showToast("已匯出 JSON 備份");
   }
 
   function exportCSVData() {
     const csv = tasksToCSV(tasks, tagMap);
     downloadCSV(`rollo-tasks-${todayKey()}.csv`, csv);
-
-    setToast("已匯出 CSV");
-    setTimeout(() => setToast(""), 1800);
+    showToast("已匯出 CSV");
   }
 
   function openSettings() {
@@ -274,22 +392,29 @@ export default function App() {
     }
   }
 
-  function handleLoginSuccess(profile) {
-    setAccount(profile);
-    setAuthOpen(false);
-    setSettingsOpen(true);
-  }
+  async function handleLogout() {
+    if (supabaseReady) {
+      await supabase.auth.signOut();
+    } else {
+      setAccount(null);
+    }
 
-  function handleLogout() {
-    setAccount(null);
     setSettingsOpen(false);
-    setToast("已登出");
-    setTimeout(() => setToast(""), 1800);
+    showToast("已登出");
   }
 
   function tagsLockedNotice() {
-    setToast("登入後才能使用標籤");
-    setTimeout(() => setToast(""), 1800);
+    showToast("登入後才能使用標籤");
+  }
+
+  if (authLoading) {
+    return (
+      <div className={`app theme-${theme}`}>
+        <div className="boot-loading">
+          <Rollo size={56} mood="happy" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -305,7 +430,12 @@ export default function App() {
       />
 
       <main className="content">
-        {tab === "todo" ? (
+        {account && cloudLoading ? (
+          <div className="boot-loading">
+            <Rollo size={48} mood="happy" />
+            <p>同步雲端資料中…</p>
+          </div>
+        ) : tab === "todo" ? (
           <TodoPage
             tasks={todoTasks}
             tagMap={tagMap}
@@ -349,7 +479,6 @@ export default function App() {
         />
       )}
 
-
       {detailTask && (
         <DoneDetailModal
           task={detailTask}
@@ -361,12 +490,7 @@ export default function App() {
         />
       )}
 
-      {authOpen && (
-        <LoginSheet
-          onClose={() => setAuthOpen(false)}
-          onSuccess={handleLoginSuccess}
-        />
-      )}
+      {authOpen && <LoginSheet onClose={() => setAuthOpen(false)} />}
 
       {settingsOpen && (
         <SettingsSheet
@@ -374,8 +498,9 @@ export default function App() {
           theme={theme}
           setTheme={setTheme}
           tags={tags}
-          setTags={setTags}
           onAddTag={addTag}
+          onRenameTag={renameTag}
+          onDeleteTag={deleteTagHandler}
           onLogout={handleLogout}
           onExportJSON={exportLocalData}
           onExportCSV={exportCSVData}

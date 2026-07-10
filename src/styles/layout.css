@@ -202,6 +202,19 @@
   color: var(--muted);
 }
 
+/* v0.1.25 - loading gate while checking Supabase session / syncing cloud data */
+.boot-loading {
+  height: 100%;
+  min-height: 58vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .empty-ball-wrap {
   margin-bottom: 14px;
   position: relative;

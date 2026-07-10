@@ -1,52 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
-import { GOOGLE_CLIENT_ID } from "../constants/defaults";
-import { decodeGoogleCredential, loadGoogleScript } from "../utils/googleAuth";
+import { supabase, supabaseReady } from "../utils/supabaseClient";
 import { BottomSheet } from "./Modal";
 import Rollo from "./Rollo";
 
-export default function LoginSheet({ onClose, onSuccess }) {
-  const buttonRef = useRef(null);
+function GoogleMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18">
+      <path
+        fill="#4285F4"
+        d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.56 2.7-3.87 2.7-6.62z"
+      />
+      <path
+        fill="#34A853"
+        d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"
+      />
+      <path
+        fill="#EA4335"
+        d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58z"
+      />
+    </svg>
+  );
+}
+
+export default function LoginSheet({ onClose }) {
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) {
-      setError("尚未設定 Google Client ID，請洽開發者完成設定。");
+  async function handleLogin() {
+    if (!supabaseReady) {
+      setError("尚未設定 Supabase 連線，請洽開發者完成設定。");
       return;
     }
 
-    let cancelled = false;
+    setPending(true);
+    setError("");
 
-    loadGoogleScript()
-      .then((google) => {
-        if (cancelled || !buttonRef.current) return;
+    sessionStorage.setItem("rollo:post-login", "settings");
 
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response) => {
-            try {
-              onSuccess(decodeGoogleCredential(response.credential));
-            } catch {
-              setError("登入失敗，請再試一次。");
-            }
-          },
-        });
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
 
-        google.accounts.id.renderButton(buttonRef.current, {
-          type: "standard",
-          theme: "filled_black",
-          size: "large",
-          shape: "pill",
-          text: "continue_with",
-          width: 300,
-        });
-      })
-      .catch(() => setError("Google 登入元件載入失敗，請檢查網路連線。"));
-
-    return () => {
-      cancelled = true;
-    };
-  }, [onSuccess]);
+    if (authError) {
+      setPending(false);
+      setError("登入失敗，請再試一次。");
+      sessionStorage.removeItem("rollo:post-login");
+    }
+    // On success the browser navigates away to Google, then back - no
+    // further action needed here.
+  }
 
   return (
     <BottomSheet onClose={onClose}>
@@ -66,7 +74,10 @@ export default function LoginSheet({ onClose, onSuccess }) {
           </div>
         </div>
 
-        <div className="google-btn-slot" ref={buttonRef} />
+        <button className="google-login-btn" onClick={handleLogin} disabled={pending}>
+          <GoogleMark />
+          {pending ? "跳轉中…" : "Continue with Google"}
+        </button>
 
         {error && <p className="login-error">{error}</p>}
 
