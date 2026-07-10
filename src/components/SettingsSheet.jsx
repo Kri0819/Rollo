@@ -251,7 +251,7 @@ export default function SettingsSheet({
           </button>
 
           <div className="about-card">
-            <Rollo size={64} mood="happy" showShadow={false} className="about-ball" />
+            <Rollo size={56} mood="happy" showShadow={false} trail className="about-ball" />
             <h3>Rollo｜滾滾</h3>
             <p>會自己滾到明天的待辦清單。</p>
             <p className="about-version">v{APP_VERSION}</p>

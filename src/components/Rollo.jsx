@@ -1,13 +1,22 @@
 import { useId } from "react";
 
-export default function Rollo({ size = 32, mood = "happy", showShadow = true, className = "" }) {
+export default function Rollo({
+  size = 32,
+  mood = "happy",
+  showShadow = true,
+  trail = false,
+  className = "",
+}) {
   const gradId = `rollo-grad-${useId()}`;
+
+  const svgWidth = trail ? Math.round(size * 1.5) : size;
+  const svgHeight = size;
 
   return (
     <svg
-      viewBox="0 0 100 100"
-      width={size}
-      height={size}
+      viewBox={trail ? "0 0 170 110" : "0 0 100 100"}
+      width={svgWidth}
+      height={svgHeight}
       className={className}
       role="img"
       aria-label="滾滾"
@@ -20,22 +29,57 @@ export default function Rollo({ size = 32, mood = "happy", showShadow = true, cl
         </radialGradient>
       </defs>
 
-      {showShadow && (
-        <ellipse cx="50" cy="93" rx="27" ry="5" fill="rgba(47, 36, 20, 0.14)" />
+      {trail && (
+        <>
+          {/* trailing dashes under the ball */}
+          <path
+            d="M6 80 Q34 92 60 84"
+            stroke="#f0c98f"
+            strokeWidth="4"
+            strokeDasharray="1 10"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.8"
+          />
+
+          {/* rising dashed path to the top right */}
+          <path
+            d="M90 70 Q116 84 130 62 Q140 46 149 27"
+            stroke="#eda23f"
+            strokeWidth="5"
+            strokeDasharray="1 11"
+            strokeLinecap="round"
+            fill="none"
+          />
+
+          <circle cx="116" cy="74" r="7" fill="#cdb188" />
+          <circle cx="138" cy="45" r="9" fill="#cdb188" />
+          <circle cx="155" cy="20" r="10" fill="none" stroke="#eda23f" strokeWidth="6" />
+        </>
       )}
 
-      <circle cx="50" cy="48" r="42" fill={`url(#${gradId})`} />
+      {showShadow && (
+        <ellipse
+          cx={trail ? 58 : 50}
+          cy={trail ? 100 : 93}
+          rx="27"
+          ry="5"
+          fill="rgba(47, 36, 20, 0.14)"
+        />
+      )}
+
+      <circle cx={trail ? 58 : 50} cy={trail ? 53 : 48} r="42" fill={`url(#${gradId})`} />
 
       <path
-        d="M28 34 Q22 45 25 59"
+        d={trail ? "M38 33 Q30 44 34 61" : "M20 28 Q13 44 17 62"}
         stroke="rgba(255,255,255,0.55)"
-        strokeWidth="7"
+        strokeWidth="7.5"
         strokeLinecap="round"
         fill="none"
       />
 
       {mood === "sleepy" ? (
-        <>
+        <g transform={trail ? "translate(8, 5)" : ""}>
           <path
             d="M33 48 Q38 43 43 48"
             stroke="#3a2c22"
@@ -57,9 +101,9 @@ export default function Rollo({ size = 32, mood = "happy", showShadow = true, cl
             strokeLinecap="round"
             fill="none"
           />
-        </>
+        </g>
       ) : (
-        <>
+        <g transform={trail ? "translate(8, 5)" : ""}>
           <ellipse cx="39" cy="50" rx="4.2" ry="6" fill="#3a2c22" />
           <ellipse cx="61" cy="50" rx="4.2" ry="6" fill="#3a2c22" />
           <path
@@ -69,7 +113,7 @@ export default function Rollo({ size = 32, mood = "happy", showShadow = true, cl
             strokeLinecap="round"
             fill="none"
           />
-        </>
+        </g>
       )}
     </svg>
   );

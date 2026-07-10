@@ -217,16 +217,6 @@
 
 .empty-ball-wrap {
   margin-bottom: 14px;
-  position: relative;
-}
-
-.empty-ball-wrap::before {
-  content: "";
-  position: absolute;
-  right: 68px;
-  top: 36px;
-  width: 74px;
-  border-top: 2px dotted var(--line);
 }
 
 .empty h2 {

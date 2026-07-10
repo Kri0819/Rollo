@@ -4,7 +4,7 @@ export default function EmptyState({ title, subtitle }) {
   return (
     <div className="empty">
       <div className="empty-ball-wrap">
-        <Rollo size={80} mood="sleepy" />
+        <Rollo size={64} mood="sleepy" trail />
       </div>
       <h2>{title}</h2>
       <p>{subtitle}</p>
