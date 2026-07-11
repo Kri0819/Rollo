@@ -180,6 +180,11 @@ export default function App() {
 
   useEffect(() => {
     save(STORAGE_KEYS.settings, { theme });
+    document.body.classList.toggle("theme-dark", theme === "dark");
+    document.body.classList.toggle("theme-light", theme === "light");
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#201b14" : "#F7F3E8");
   }, [theme]);
 
   const tagMap = useMemo(() => {

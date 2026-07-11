@@ -23,8 +23,18 @@ body,
 
 body {
   margin: 0;
-  background: #eee6d7;
+  background: #f7f3e8;
   overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  body.theme-dark {
+    background: #201b14;
+  }
+
+  body.theme-light {
+    background: #f7f3e8;
+  }
 }
 
 button,
@@ -90,7 +100,6 @@ button {
 
 .app {
   height: 100dvh;
-  min-height: 100vh;
   max-width: 480px;
   margin: 0 auto;
   position: relative;

@@ -172,7 +172,7 @@
 .fab {
   position: absolute;
   right: 20px;
-  bottom: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
   width: 58px;
   height: 58px;
   border: 0;
