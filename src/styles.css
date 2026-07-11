@@ -471,28 +471,33 @@ button, input, select, textarea { min-width: 0; }
 }
 
 .tag-filter-chip.active {
-  border-color: transparent;
+  border: 2px solid var(--orange);
   background: var(--card-soft);
   color: var(--orange);
+  font-weight: 800;
   box-shadow: 0 2px 8px rgba(76, 62, 38, 0.08);
 }
 
 .tag-filter-chip.tag-blue.active {
+  border-color: var(--tag-blue-fg);
   background: var(--tag-blue-bg);
   color: var(--tag-blue-fg);
 }
 
 .tag-filter-chip.tag-sage.active {
+  border-color: var(--tag-sage-fg);
   background: var(--tag-sage-bg);
   color: var(--tag-sage-fg);
 }
 
 .tag-filter-chip.tag-gold.active {
+  border-color: var(--tag-gold-fg);
   background: var(--tag-gold-bg);
   color: var(--tag-gold-fg);
 }
 
 .tag-filter-chip.tag-coral.active {
+  border-color: var(--tag-coral-fg);
   background: var(--tag-coral-bg);
   color: var(--tag-coral-fg);
 }
@@ -1377,9 +1382,10 @@ select {
 }
 
 .tag-edit-input {
-  border: 0;
-  background: transparent;
-  padding: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-soft);
+  padding: 8px 12px;
   font-size: 15px;
   font-weight: 900;
 }

@@ -48,8 +48,6 @@ export function TopSwitch({ activeTab, onChangeTab }) {
 }
 
 export function TagFilter({ tags, activeId, onChange, locked, onLocked }) {
-  if (!tags.length) return null;
-
   function handleClick(nextId) {
     if (locked) {
       onLocked?.();
