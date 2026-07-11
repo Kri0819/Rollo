@@ -33,19 +33,6 @@
   }
 }
 
-.brand-ball::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 19px;
-  width: 20px;
-  height: 6px;
-  border-bottom: 2px dashed #ec9b7b;
-  border-radius: 999px;
-  transform: rotate(-6deg);
-  opacity: 0.6;
-}
-
 .brand-name {
   margin: 0;
   font-size: 20px;
