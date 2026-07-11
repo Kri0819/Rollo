@@ -46,4 +46,4 @@ export const MAX_TAGS = 5;
 
 // Bump this on every release - it's the single source of truth,
 // shown in Settings › 關於 and the Settings footer.
-export const APP_VERSION = "0.1.28";
+export const APP_VERSION = "0.1.29";

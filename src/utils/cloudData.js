@@ -34,7 +34,7 @@ function toDbTask(task) {
 
 export async function fetchCloudTags() {
   const { data, error } = await supabase
-    .from("tags")
+    .from("rollo_tags")
     .select("*")
     .order("created_at", { ascending: true });
 
@@ -44,7 +44,7 @@ export async function fetchCloudTags() {
 
 export async function fetchCloudTasks() {
   const { data, error } = await supabase
-    .from("tasks")
+    .from("rollo_tasks")
     .select("*")
     .order("created_at", { ascending: true });
 
@@ -54,7 +54,7 @@ export async function fetchCloudTasks() {
 
 export async function insertCloudTask(task) {
   const { data, error } = await supabase
-    .from("tasks")
+    .from("rollo_tasks")
     .insert({ ...toDbTask(task), created_at: new Date().toISOString() })
     .select()
     .single();
@@ -64,18 +64,18 @@ export async function insertCloudTask(task) {
 }
 
 export async function updateCloudTask(id, patch) {
-  const { error } = await supabase.from("tasks").update(toDbTask(patch)).eq("id", id);
+  const { error } = await supabase.from("rollo_tasks").update(toDbTask(patch)).eq("id", id);
   if (error) throw error;
 }
 
 export async function deleteCloudTask(id) {
-  const { error } = await supabase.from("tasks").delete().eq("id", id);
+  const { error } = await supabase.from("rollo_tasks").delete().eq("id", id);
   if (error) throw error;
 }
 
 export async function insertCloudTag(name) {
   const { data, error } = await supabase
-    .from("tags")
+    .from("rollo_tags")
     .insert({ name })
     .select()
     .single();
@@ -85,12 +85,12 @@ export async function insertCloudTag(name) {
 }
 
 export async function renameCloudTag(id, name) {
-  const { error } = await supabase.from("tags").update({ name }).eq("id", id);
+  const { error } = await supabase.from("rollo_tags").update({ name }).eq("id", id);
   if (error) throw error;
 }
 
 export async function deleteCloudTag(id) {
-  const { error } = await supabase.from("tags").delete().eq("id", id);
+  const { error } = await supabase.from("rollo_tags").delete().eq("id", id);
   if (error) throw error;
 }
 

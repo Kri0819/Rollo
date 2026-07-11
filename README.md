@@ -10,7 +10,7 @@
 
 ### 1. 建立資料表
 
-到 Supabase 專案的 **SQL Editor**，貼上並執行 `supabase/schema.sql` 這個檔案。它會建立 `tasks`、`tags` 兩張表，並開啟 Row Level Security（每個人只能讀寫自己的資料）。
+到 Supabase 專案的 **SQL Editor**，貼上並執行 `supabase/schema.sql` 這個檔案。它會建立 `rollo_tags`、`rollo_tasks` 兩張表（有 `rollo_` 前綴，因為這個 Supabase 專案可能同時給其他 App 共用），並開啟 Row Level Security（每個人只能讀寫自己的資料）。
 
 ### 2. 開啟 Google 登入
 
@@ -35,6 +35,8 @@ VITE_SUPABASE_ANON_KEY=你的-anon-public-key
 這組 anon key 本來就設計成可以放在前端（會被瀏覽器看到），真正的存取權限是靠上面的 Row Level Security 控制，不是靠藏起這組 key。
 
 如果部署在 Vercel／Netlify，記得到該平台的環境變數設定裡也加上同樣兩個變數。
+
+> **常見錯誤**：畫面顯示「尚未設定 Supabase 連線」，通常是因為環境變數是 build 之後才加的。Vite 是在 build 當下把這些值寫死進打包好的檔案，所以在平台後台加完環境變數後，一定要**重新觸發一次部署**，光是存檔不會生效；改完也要記得重開本機的 `npm run dev`。
 
 ### 沒登入的狀態
 
