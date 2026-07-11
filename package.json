@@ -1,0 +1,21 @@
+{
+  "name": "rollo",
+  "version": "0.1.29",
+  "private": true,
+  "description": "Rollo｜滾滾｜會自己滾到明天的待辦清單",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "@supabase/supabase-js": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest"
+  },
+  "devDependencies": {}
+}
